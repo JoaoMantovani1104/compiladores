@@ -48,7 +48,7 @@ ID      {LETRA}({LETRA}|{DIGITO}|_)*
 ":"   {printf("(DOISP, %s)\n",yytext);}
 
 {NUMERO}+{ID}  {printf("Erro léxico: numero NO identificador => %s \n", yytext); /*exit(1);*/}
-[0-9]+\.+(\.|{DIGITO})*    {printf("Numero nao aceito : %s \n", yytext); /*exit(1);*/}
+[0-9]+\.+(\.|{DIGITO}|{ID})*    {printf("Numero nao aceito : %s \n", yytext); /*exit(1);*/}
 {ID}    {printf("(ID, %s)\n",yytext);}
 {NUMERO}   {printf("(NUM, %s)\n",yytext);}
 
