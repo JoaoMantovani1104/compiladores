@@ -6,6 +6,10 @@
 /* Declaração das funções que o Bison precisará */
 int yylex(); // A função do analisador léxico (gerada pelo Flex)
 void yyerror(const char *s); // A função para reportar erros
+int contador_erros_lexicos = 0;
+extern FILE *yyin;
+extern int yylineno;
+extern char *yytext;
 %}
 
 %union {
@@ -63,7 +67,7 @@ corpo:
     /* */
     | funcao corpo
     | expressao corpo
-    | condicional corpo -> ver verificação de "else"
+    | condicional corpo 
     | loop corpo
     | begin_escopo corpo
 
@@ -103,6 +107,8 @@ operador:
     | TOKEN_DIV
     ;
 
+resto_calculo:
+
 condicional: 
     TOKEN_IF expressao_condicional TOKEN_THEN
     ;
@@ -111,6 +117,8 @@ condicional:
 expressao_condicional:
     valor comparacao valor mais_comparacoes
     ;
+
+comparacao:
 
 valor:
     ID
@@ -122,3 +130,62 @@ mais_comparacoes:
     TOKEN_AND expressao_condicional
     | TOKEN_OR expressao_condicional
     ;
+
+loop:
+
+begin_escopo:
+
+%%
+
+
+int main(int argc, char **argv) {
+    
+    
+    if (argc < 2) {
+        fprintf(stderr, "Erro: Forneça um nome de arquivo.\n");
+        fprintf(stderr, "Uso: %s nome_do_arquivo.txt\n", argv[0]);
+        return 1;
+    }
+
+    yyin = fopen(argv[1], "r");
+    if (!yyin) {
+        fprintf(stderr, "Não foi possível abrir o arquivo %s\n", argv[1]);
+        return 1;
+    }
+    
+    printf("- Iniciando Fase 1: Análise Léxica -\n");
+    
+    
+    while (yylex() != 0);
+    
+    printf("- Análise Léxica finalizada. Quantidade de erros: %d -\n", contador_erros_lexicos);
+
+    if (contador_erros_lexicos > 0) {
+        printf("\nCompilação abortada devido a erros léxicos.\n");
+        fclose(yyin);
+        return 1; /* Termina o programa com erro */
+    }
+    
+    rewind(yyin); 
+
+    
+    /* resetar o contador de linhas */
+    yylineno = 1;
+    
+    printf("\n--- Iniciando Fase 2: Análise Sintática ---\n");
+    
+    
+    yyparse(); 
+    
+    fclose(yyin);
+    
+    
+    return 0;
+}
+
+void yyerror(const char *s) {
+
+    fprintf(stderr, "\nErro Sintático na linha %d: %s\n", yylineno, s);
+
+    fprintf(stderr, "    Token inesperado: '%s'\n", yytext);
+}

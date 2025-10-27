@@ -1,6 +1,10 @@
 %{
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h> 
+#include "sintatico.tab.h"
+extern YYSTYPE yylval;
+extern int contador_erros_lexicos;
 %}
 
 DIGITO  [0-9]
@@ -52,9 +56,13 @@ ID      {LETRA}({LETRA}|{DIGITO}|_)*
 {ID}    {printf("(ID, %s)\n",yytext);}
 {NUMERO}   {printf("(NUM, %s)\n",yytext);}
 
-[ \n\t]+    ;
+[ \r\t]+ ;
+\n  { yylineno++; }
 
-.   {printf("Erro léxico: Simbolo Invalido => %s \n", yytext); /*exit(1);*/}
+.   {
+    printf("Erro léxico: Simbolo Invalido => %s \n", yytext); /*exit(1);*/
+    contador_erros_lexicos++;    
+}
 
 %%
 
