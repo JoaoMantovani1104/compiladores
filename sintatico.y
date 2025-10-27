@@ -29,11 +29,13 @@ void yyerror(const char *s); // A função para reportar erros
 root:
     TOKEN_PROGRAM ID TOKEN_PONTOVIRG
     resto
+    ;
 
 resto:
     declaracao_variaveis
     declaracao_subprogramas
     comando_composto
+    ;
 
 declaracao_variaveis:
     /* */
@@ -41,8 +43,8 @@ declaracao_variaveis:
     ;
 
 lista_variaveis:
-    ID TOKEN_DOISP tipo TOKEN_PONTOVIRG
-    | lista_variaveis ID TOKEN_DOISP tipo TOKEN_PONTOVIRG
+    ID quantidade_variaveis TOKEN_DOISP tipo TOKEN_PONTOVIRG
+    lista_variaveis 
     ;
 
 tipo:
@@ -54,5 +56,69 @@ declaracao_subprogramas:
 /* adicionar procedures e functions */
 
 comando_composto:
-    TOKEN_BEGIN corpo TOKEN_END TOKEN_PONTOVIRG
+    TOKEN_BEGIN corpo TOKEN_END TOKEN_PONTO
+    ;
+
+corpo:
+    /* */
+    | funcao corpo
+    | expressao corpo
+    | condicional corpo -> ver verificação de "else"
+    | loop corpo
+    | begin_escopo corpo
+
+funcao:
+    TOKEN_READ TOKEN_ABREPAR quantidade_variaveis TOKEN_FECHAPAR
+    | TOKEN_WRITE TOKEN_ABREPAR quantidade_variaveis TOKEN_FECHAPAR
+    ;
+
+quantidade_variaveis:
+    ID mais_variaveis
+    ;
+
+mais_variaveis:
+    /* */
+    TOKEN_VIRG ID mais_variaveis
+    ;
+
+expressao:
+    ID TOKEN_ATRIB calculo TOKEN_PONTOVIRG
+    ;
+
+calculo:
+    TOKEN_ABREPAR calculo TOKEN_FECHAPAR
+    | ID seq_calculo 
+    | NUMERO seq_calculo
+    ;
+
+seq_calculo:
+    /* */
+    | operador resto_calculo
+    ;
+
+operador:
+    TOKEN_SOMA
+    | TOKEN_SUBT
+    | TOKEN_MULT
+    | TOKEN_DIV
+    ;
+
+condicional: 
+    TOKEN_IF expressao_condicional TOKEN_THEN
+    ;
+    
+
+expressao_condicional:
+    valor comparacao valor mais_comparacoes
+    ;
+
+valor:
+    ID
+    | NUMERO
+    ;
+
+mais_comparacoes:
+    /* */
+    TOKEN_AND expressao_condicional
+    | TOKEN_OR expressao_condicional
     ;
