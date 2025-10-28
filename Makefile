@@ -6,7 +6,7 @@
 # Altere estes nomes para bater com os seus arquivos
 
 # O nome do seu arquivo Bison (.y)
-BISON_FILE = sintatico.y
+BISON_FILE = sintatico_novo.y
 
 # O nome do seu arquivo Flex (.l)
 LEX_FILE = lexico.l

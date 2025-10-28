@@ -1028,7 +1028,7 @@ case 44:
 YY_RULE_SETUP
 #line 71 "lexico.l"
 {
-    printf("Erro léxico: Simbolo Invalido => %s \n", yytext); /*exit(1);*/
+    printf("Erro léxico: Simbolo Invalido => %s na linha %i\n", yytext, yylineno); /*exit(1);*/
     contador_erros_lexicos++;    
 }
 	YY_BREAK
