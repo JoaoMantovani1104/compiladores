@@ -39,7 +39,7 @@
 # define YY_YY_SINTATICO_TAB_H_INCLUDED
 /* Debug traces.  */
 #ifndef YYDEBUG
-# define YYDEBUG 0
+# define YYDEBUG 1
 #endif
 #if YYDEBUG
 extern int yydebug;
@@ -101,12 +101,13 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 15 "sintatico.y"
+#line 16 "sintatico.y"
 
-    char *sval; 
-    int ival;  
+        char *sval; 
+        int ival;  
+    
 
-#line 110 "sintatico.tab.h"
+#line 111 "sintatico.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

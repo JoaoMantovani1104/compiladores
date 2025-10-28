@@ -805,187 +805,187 @@ do_action:	/* This label is used only to access EOF actions. */
 case 1:
 YY_RULE_SETUP
 #line 16 "lexico.l"
-{printf("(PROGRAM, %s)\n", yytext);}
+{ return TOKEN_PROGRAM; }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
 #line 17 "lexico.l"
-{printf("(VAR, %s)\n",yytext);}
+{ return TOKEN_VAR; }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
 #line 18 "lexico.l"
-{printf("(PROCEDURE, %s)\n",yytext);}
+{ return TOKEN_PROCEDURE; }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
 #line 19 "lexico.l"
-{printf("(FUNCTION, %s)\n",yytext);}
+{ return TOKEN_FUNCTION; }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
 #line 20 "lexico.l"
-{printf("(BEGIN, %s)\n",yytext);}
+{ return TOKEN_BEGIN; }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
 #line 21 "lexico.l"
-{printf("(END, %s)\n",yytext);}
+{ return TOKEN_END; }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
 #line 22 "lexico.l"
-{printf("(FALSE, %s)\n",yytext);}
+{ return TOKEN_FALSE; }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
 #line 23 "lexico.l"
-{printf("(TRUE, %s)\n",yytext);}
+{ return TOKEN_TRUE; }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
 #line 24 "lexico.l"
-{printf("(IF, %s)\n",yytext);}
+{ return TOKEN_IF; }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
 #line 25 "lexico.l"
-{printf("(THEN, %s)\n",yytext);}
+{ return TOKEN_THEN; }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
 #line 26 "lexico.l"
-{printf("(ELSE, %s)\n",yytext);}
+{ return TOKEN_ELSE; }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
 #line 27 "lexico.l"
-{printf("(WHILE, %s)\n",yytext);}
+{ return TOKEN_WHILE; }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
 #line 28 "lexico.l"
-{printf("(DO, %s)\n",yytext);}
+{ return TOKEN_DO; }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
 #line 29 "lexico.l"
-{printf("(READ, %s)\n",yytext);}
+{ return TOKEN_READ; }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
 #line 30 "lexico.l"
-{printf("(WRITE, %s)\n",yytext);}
+{ return TOKEN_WRITE; }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
 #line 31 "lexico.l"
-{printf("(AND, %s)\n",yytext);}
+{ return TOKEN_AND; }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
 #line 32 "lexico.l"
-{printf("(OR, %s)\n",yytext);}
+{ return TOKEN_OR; }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
 #line 33 "lexico.l"
-{printf("(NOT, %s)\n",yytext);}
+{ return TOKEN_NOT; }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
 #line 34 "lexico.l"
-{printf("(DIV, %s)\n",yytext);}
+{ return TOKEN_DIV; }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
 #line 35 "lexico.l"
-{printf("(INTEGER, %s)\n",yytext);}
+{ return TOKEN_INTEGER; }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
 #line 36 "lexico.l"
-{printf("(BOOLEAN, %s)\n",yytext);}
+{ return TOKEN_BOOLEAN; }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
 #line 37 "lexico.l"
-{printf("(SOMA, %s)\n",yytext);}
+{ return TOKEN_SOMA; }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
 #line 38 "lexico.l"
-{printf("(SUBT, %s)\n",yytext);}
+{ return TOKEN_SUBT; }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
 #line 39 "lexico.l"
-{printf("(MULT, %s)\n",yytext);}
+{ return TOKEN_MULT; }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
 #line 40 "lexico.l"
-{printf("(IGUAL, %s)\n",yytext);}
+{ return TOKEN_IGUAL; }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
 #line 41 "lexico.l"
-{printf("(PARD, %s)\n",yytext);}
+{ return TOKEN_FECHAPAR; } 
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
 #line 42 "lexico.l"
-{printf("(PARE, %s)\n",yytext);}
+{ return TOKEN_ABREPAR; }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
 #line 43 "lexico.l"
-{printf("(PONTOVIRG, %s)\n",yytext);}
+{ return TOKEN_PONTOVIRG; }
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
 #line 44 "lexico.l"
-{printf("(VIRG, %s)\n",yytext);}
+{ return TOKEN_VIRG; }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
 #line 45 "lexico.l"
-{printf("(PONTO, %s)\n",yytext);}
+{ return TOKEN_PONTO; }
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
 #line 46 "lexico.l"
-{printf("(DIF, %s)\n",yytext);}
+{ return TOKEN_DIF; }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
 #line 47 "lexico.l"
-{printf("(MAIOR, %s)\n",yytext);}
+{ return TOKEN_MAIOR; }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
 #line 48 "lexico.l"
-{printf("(MENOR, %s)\n",yytext);}
+{ return TOKEN_MENOR; }
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
 #line 49 "lexico.l"
-{printf("(MAIORIGUAL, %s)\n",yytext);}
+{ return TOKEN_MAIORIGUAL; }
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
 #line 50 "lexico.l"
-{printf("(MENORIGUAL, %s)\n",yytext);}
+{ return TOKEN_MENORIGUAL; }
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
 #line 51 "lexico.l"
-{printf("(ATRIB, %s)\n",yytext);}
+{ return TOKEN_ATRIB; }
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
 #line 52 "lexico.l"
-{printf("(DOISP, %s)\n",yytext);}
+{ return TOKEN_DOISP; }
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
@@ -999,28 +999,34 @@ YY_RULE_SETUP
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 56 "lexico.l"
-{printf("(ID, %s)\n",yytext);}
+#line 58 "lexico.l"
+{ 
+    yylval.sval = strdup(yytext); 
+    return ID; 
+}
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 57 "lexico.l"
-{printf("(NUM, %s)\n",yytext);}
+#line 63 "lexico.l"
+{ 
+    yylval.sval = strdup(yytext); 
+    return NUMERO; 
+}
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 59 "lexico.l"
+#line 68 "lexico.l"
 ;
 	YY_BREAK
 case 43:
 /* rule 43 can match eol */
 YY_RULE_SETUP
-#line 60 "lexico.l"
+#line 69 "lexico.l"
 { yylineno++; }
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 62 "lexico.l"
+#line 71 "lexico.l"
 {
     printf("Erro léxico: Simbolo Invalido => %s \n", yytext); /*exit(1);*/
     contador_erros_lexicos++;    
@@ -1028,10 +1034,10 @@ YY_RULE_SETUP
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 67 "lexico.l"
+#line 76 "lexico.l"
 ECHO;
 	YY_BREAK
-#line 1035 "lex.yy.c"
+#line 1041 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2036,7 +2042,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 67 "lexico.l"
+#line 76 "lexico.l"
 
 
 int yywrap() {return 1;}

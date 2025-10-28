@@ -13,48 +13,57 @@ LETRA   [a-zA-Z]
 ID      {LETRA}({LETRA}|{DIGITO}|_)*
 
 %%
-"program"   {printf("(PROGRAM, %s)\n", yytext);}
-"var"   {printf("(VAR, %s)\n",yytext);}
-"procedure"   {printf("(PROCEDURE, %s)\n",yytext);}
-"function"   {printf("(FUNCTION, %s)\n",yytext);}
-"begin"   {printf("(BEGIN, %s)\n",yytext);}
-"end"   {printf("(END, %s)\n",yytext);}
-"false"   {printf("(FALSE, %s)\n",yytext);}
-"true"   {printf("(TRUE, %s)\n",yytext);}
-"if"   {printf("(IF, %s)\n",yytext);}
-"then"   {printf("(THEN, %s)\n",yytext);}
-"else"   {printf("(ELSE, %s)\n",yytext);}
-"while"   {printf("(WHILE, %s)\n",yytext);}
-"do"   {printf("(DO, %s)\n",yytext);}
-"read"   {printf("(READ, %s)\n",yytext);}
-"write"   {printf("(WRITE, %s)\n",yytext);}
-"and"   {printf("(AND, %s)\n",yytext);}
-"or"   {printf("(OR, %s)\n",yytext);}
-"not"   {printf("(NOT, %s)\n",yytext);}
-"div"   {printf("(DIV, %s)\n",yytext);}
-"integer"   {printf("(INTEGER, %s)\n",yytext);}
-"boolean"   {printf("(BOOLEAN, %s)\n",yytext);}
-"+"   {printf("(SOMA, %s)\n",yytext);}
-"-"   {printf("(SUBT, %s)\n",yytext);}
-"*"   {printf("(MULT, %s)\n",yytext);}
-"="   {printf("(IGUAL, %s)\n",yytext);}
-")"   {printf("(PARD, %s)\n",yytext);}
-"("   {printf("(PARE, %s)\n",yytext);}
-";"   {printf("(PONTOVIRG, %s)\n",yytext);}
-","   {printf("(VIRG, %s)\n",yytext);}
-"."   {printf("(PONTO, %s)\n",yytext);}
-"<>"   {printf("(DIF, %s)\n",yytext);}
-">"   {printf("(MAIOR, %s)\n",yytext);}
-"<"   {printf("(MENOR, %s)\n",yytext);}
-">="   {printf("(MAIORIGUAL, %s)\n",yytext);}
-"<="   {printf("(MENORIGUAL, %s)\n",yytext);}
-":="   {printf("(ATRIB, %s)\n",yytext);}
-":"   {printf("(DOISP, %s)\n",yytext);}
+"program"   { return TOKEN_PROGRAM; }
+"var"       { return TOKEN_VAR; }
+"procedure" { return TOKEN_PROCEDURE; }
+"function"  { return TOKEN_FUNCTION; }
+"begin"     { return TOKEN_BEGIN; }
+"end"       { return TOKEN_END; }
+"false"     { return TOKEN_FALSE; }
+"true"      { return TOKEN_TRUE; }
+"if"        { return TOKEN_IF; }
+"then"      { return TOKEN_THEN; }
+"else"      { return TOKEN_ELSE; }
+"while"     { return TOKEN_WHILE; }
+"do"        { return TOKEN_DO; }
+"read"      { return TOKEN_READ; }
+"write"     { return TOKEN_WRITE; }
+"and"       { return TOKEN_AND; }
+"or"        { return TOKEN_OR; }
+"not"       { return TOKEN_NOT; }
+"div"       { return TOKEN_DIV; }
+"integer"   { return TOKEN_INTEGER; }
+"boolean"   { return TOKEN_BOOLEAN; }
+"+"         { return TOKEN_SOMA; }
+"-"         { return TOKEN_SUBT; }
+"*"         { return TOKEN_MULT; }
+"="         { return TOKEN_IGUAL; }
+")"         { return TOKEN_FECHAPAR; } 
+"("         { return TOKEN_ABREPAR; }
+";"         { return TOKEN_PONTOVIRG; }
+","         { return TOKEN_VIRG; }
+"."         { return TOKEN_PONTO; }
+"<>"        { return TOKEN_DIF; }
+">"         { return TOKEN_MAIOR; }
+"<"         { return TOKEN_MENOR; }
+">="        { return TOKEN_MAIORIGUAL; }
+"<="        { return TOKEN_MENORIGUAL; }
+":="        { return TOKEN_ATRIB; }
+":"         { return TOKEN_DOISP; }
 
 {NUMERO}+{ID}  {printf("Erro léxico: numero NO identificador => %s \n", yytext); /*exit(1);*/}
 [0-9]+\.+(\.|{DIGITO}|{ID})*    {printf("Numero nao aceito : %s \n", yytext); /*exit(1);*/}
-{ID}    {printf("(ID, %s)\n",yytext);}
-{NUMERO}   {printf("(NUM, %s)\n",yytext);}
+
+
+{ID}        { 
+    yylval.sval = strdup(yytext); 
+    return ID; 
+}
+
+{NUMERO}    { 
+    yylval.sval = strdup(yytext); 
+    return NUMERO; 
+}
 
 [ \r\t]+ ;
 \n  { yylineno++; }
