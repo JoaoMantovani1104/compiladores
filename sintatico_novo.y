@@ -145,10 +145,8 @@ atribuicao:
     ;
 
 chamada_procedimento:
-    ID
-    | ID TOKEN_ABREPAR lista_expressoes TOKEN_FECHAPAR
+    ID TOKEN_ABREPAR lista_expressoes_opcional TOKEN_FECHAPAR
     ;
-
 condicional:
     TOKEN_IF expressao TOKEN_THEN comando
     | TOKEN_IF expressao TOKEN_THEN comando TOKEN_ELSE comando
@@ -169,6 +167,11 @@ escrita:
 lista_expressoes:
     expressao
     | lista_expressoes TOKEN_VIRG expressao
+    ;
+
+lista_expressoes_opcional:
+    /* */
+    | lista_expressoes
     ;
 
 expressao:
@@ -208,8 +211,9 @@ op_multiplicativo:
     ;
 
 fator:
-    ID
-    | ID TOKEN_ABREPAR lista_expressoes TOKEN_FECHAPAR
+    ID 
+
+    | ID TOKEN_ABREPAR lista_expressoes_opcional TOKEN_FECHAPAR /* chamada funcao */
 
     | NUMERO
 
