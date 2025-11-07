@@ -3,9 +3,8 @@
     #include <stdlib.h>
     #include <string.h>
 
-    /* Declaração das funções que o Bison precisará */
-    int yylex(); // A função do analisador léxico (gerada pelo Flex)
-    void yyerror(const char *s); // A função para reportar erros
+    int yylex(); // Analisador léxico
+    void yyerror(const char *s);
     int contador_erros_lexicos = 0;
     extern FILE *yyin;
     extern int yylineno;
