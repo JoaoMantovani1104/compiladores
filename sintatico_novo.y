@@ -104,7 +104,6 @@ declaracao_funcao:
     ;
 
 parametros_formais_opcional:
-    /* */
     | parametros_formais
     ;
 
@@ -260,7 +259,7 @@ logico:
         if (contador_erros_lexicos > 0) {
             printf("\nCompilação abortada devido a erros léxicos.\n");
             fclose(yyin);
-            return 1; /* Termina o programa com erro */
+            return 1; 
         }
         
         rewind(yyin); 
