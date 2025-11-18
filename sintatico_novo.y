@@ -2,6 +2,7 @@
     #include <stdio.h>
     #include <stdlib.h>
     #include <string.h>
+    #include <symbol_table.h>
 
     /* Declaração das funções que o Bison precisará */
     int yylex(); // A função do analisador léxico (gerada pelo Flex)
