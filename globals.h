@@ -17,6 +17,8 @@ typedef struct TreeNode {
   
 } TreeNode;
 
+TreeNode* novo_no_id(char *nome_id);
+
 
 extern TreeNode *savedTree;
 
