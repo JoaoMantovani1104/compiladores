@@ -522,7 +522,7 @@ char *yytext;
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h> 
-#include "sintatico.tab.h"
+#include "sintatico_novo.tab.h"
 extern YYSTYPE yylval;
 extern int contador_erros_lexicos;
 #line 529 "lex.yy.c"

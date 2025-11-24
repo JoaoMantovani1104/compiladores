@@ -1,9 +1,8 @@
 # ===================================================================
-# Makefile para Compilador Flex/Bison
+# Makefile Atualizado para Compilador Modular (Flex/Bison + C)
 # ===================================================================
 
-# --- Variáveis de Configuração ---
-# Altere estes nomes para bater com os seus arquivos
+# --- 1. Variáveis de Configuração ---
 
 # O nome do seu arquivo Bison (.y)
 BISON_FILE = sintatico_novo.y
@@ -11,63 +10,62 @@ BISON_FILE = sintatico_novo.y
 # O nome do seu arquivo Flex (.l)
 LEX_FILE = lexico.l
 
+# --- !!! ATENÇÃO AQUI !!! ---
+# Liste aqui os seus arquivos .c extras separados por espaço.
+# Exemplo: HELPER_SOURCES = arvore.c tabela.c util.c
+HELPER_SOURCES = arvore.c symbol_table.c 
+
 # O nome que você quer para o seu programa final
 EXECUTABLE = compilador
 
-# --- Compilador e Flags ---
-# Compilador C
+# --- 2. Compilador e Flags ---
 CC = gcc
 
-# Flags do Bison ( -d cria o arquivo .h de cabeçalho)
-BISON_FLAGS = -d
+# Flags do Bison (-d cria o .h, -v cria o .output para debug de conflitos)
+BISON_FLAGS = -d -v
 
 # Flags do Flex
 FLEX_FLAGS =
 
-# Flags do Compilador ( -g para debug, -Wall para mostrar todos os avisos)
-CFLAGS = -g -Wall
+# Flags do GCC 
+# -g: Debug (para usar gdb ou valgrind)
+# -Wall: Mostra todos os avisos (importante!)
+# -I.: Procura arquivos .h no diretório atual
+CFLAGS = -g -Wall -I.
 
-# Bibliotecas necessárias ( -lfl é a biblioteca do Flex)
+# Bibliotecas ( -lfl para Flex )
 LIBS = -lfl
 
-# --- Nomes de Arquivos Gerados (Automático) ---
-# Não precisa mexer aqui
+# --- 3. Nomes de Arquivos Gerados (Automático) ---
 BISON_C_OUT = $(BISON_FILE:.y=.tab.c)
 BISON_H_OUT = $(BISON_FILE:.y=.tab.h)
 LEX_C_OUT = lex.yy.c
 
-
 # ===================================================================
-# Regras do Makefile
+# 4. Regras do Makefile
 # ===================================================================
 
-# A regra 'all' é a padrão. 
-# Quando você digitar 'make', ele tentará construir o EXECUTABLE.
-.PHONY: all
+.PHONY: all clean
+
 all: $(EXECUTABLE)
 
-# Regra para construir o executável final
-# Depende dos arquivos .c gerados pelo Flex e Bison.
-$(EXECUTABLE): $(BISON_C_OUT) $(LEX_C_OUT)
-	@echo "--- [GCC] Compilando e linkando: $@"
+# Regra Principal: Gera o executável
+# Agora depende também dos $(HELPER_SOURCES)
+$(EXECUTABLE): $(BISON_C_OUT) $(LEX_C_OUT) $(HELPER_SOURCES)
+	@echo "--- [GCC] Compilando tudo junto: $^"
 	$(CC) $(CFLAGS) -o $@ $^ $(LIBS)
 
-# Regra para gerar o analisador sintático (Bison)
-# Esta regra gera DOIS arquivos: .tab.c e .tab.h
-# Depende do arquivo .y original
+# Regra do Bison
 $(BISON_C_OUT) $(BISON_H_OUT): $(BISON_FILE)
-	@echo "--- [BISON] Gerando analisador sintático: $(BISON_C_OUT) e $(BISON_H_OUT)"
+	@echo "--- [BISON] Gerando parser..."
 	bison $(BISON_FLAGS) $(BISON_FILE)
 
-# Regra para gerar o analisador léxico (Flex)
-# Depende do arquivo .l E, crucialmente, do .h gerado pelo Bison.
+# Regra do Flex
 $(LEX_C_OUT): $(LEX_FILE) $(BISON_H_OUT)
-	@echo "--- [FLEX] Gerando analisador léxico: $(LEX_C_OUT)"
+	@echo "--- [FLEX] Gerando lexer..."
 	flex $(FLEX_FLAGS) -o $(LEX_C_OUT) $(LEX_FILE)
 
-# Regra 'clean' para limpar todos os arquivos gerados
-# Permite que você "limpe" o diretório para recompilar do zero
-.PHONY: clean
+# Regra de Limpeza
 clean:
-	@echo "--- [CLEAN] Limpando arquivos gerados..."
-	rm -f $(EXECUTABLE) $(BISON_C_OUT) $(BISON_H_OUT) $(LEX_C_OUT) *.o
+	@echo "--- [CLEAN] Limpando bagunça..."
+	rm -f $(EXECUTABLE) $(BISON_C_OUT) $(BISON_H_OUT) $(LEX_C_OUT) *.o *.output

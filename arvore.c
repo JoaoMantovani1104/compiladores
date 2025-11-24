@@ -9,7 +9,7 @@ TreeNode* novo_no_id(char *nome_id) {
     
     no->tipo = TIPO_ID;
     no->valor_s = strdup(nome_id);
-    no->operacao = 0; // Sem operação
+    no->operacao = 0; 
     
 
     for (int i = 0; i < MAXCHILDREN; i++) {
@@ -28,9 +28,9 @@ TreeNode* novo_no_atribuicao(TreeNode* no_variavel, TreeNode* no_expressao) {
     no->valor_s = NULL; 
     no->operacao = 0;
 
-    // definição dos filhos
-    no->filho[0] = no_variavel;   // O 'x'
-    no->filho[1] = no_expressao; // O 'a + 5'
+    
+    no->filho[0] = no_variavel;   
+    no->filho[1] = no_expressao; 
     
     
     for (int i = 2; i < MAXCHILDREN; i++) {
@@ -38,4 +38,172 @@ TreeNode* novo_no_atribuicao(TreeNode* no_variavel, TreeNode* no_expressao) {
     }
     
     return no;
+}
+
+TreeNode* novo_no_num(char *val) {
+    TreeNode *no = (TreeNode*) malloc(sizeof(TreeNode));
+    if (no == NULL) yyerror("Out of memory");
+    
+    no->tipo = TIPO_NUMERO; 
+    no->valor_s = strdup(val);
+    no->operacao = 0; 
+    for (int i = 0; i < MAXCHILDREN; i++) {
+        no->filho[i] = NULL;
+    }
+    
+    return no;
+}
+
+TreeNode* novo_no_operacao(TreeNode* esq, int op, TreeNode* dir) {
+    TreeNode *no = (TreeNode*) malloc(sizeof(TreeNode));
+    if (no == NULL) yyerror("Out of memory");
+    
+    no->tipo = TIPO_OPERACAO; 
+    no->operacao = op; 
+    no->valor_s = NULL;
+    no->filho[0] = esq;
+    no->filho[1] = dir;
+    
+    for (int i = 2; i < MAXCHILDREN; i++) {
+        no->filho[i] = NULL;
+    }
+
+    return no;
+}
+
+TreeNode* novo_no_lista(TreeNode* no, TreeNode* proximo) {
+    TreeNode *n = (TreeNode*) malloc(sizeof(TreeNode));
+    if (n == NULL) yyerror("Out of memory");
+
+    n->tipo = TIPO_LISTA;
+    n->valor_s = NULL;
+    n->operacao = 0;
+
+    n->filho[0] = no;       
+    n->filho[1] = proximo;  
+
+    
+    for (int i = 2; i < MAXCHILDREN; i++) {
+        n->filho[i] = NULL;
+    }
+    return n;
+}
+
+TreeNode* novo_no_condicional(TreeNode* cond, TreeNode* then_bloco, TreeNode* else_bloco) {
+    TreeNode *no = (TreeNode*) malloc(sizeof(TreeNode));
+    if (no == NULL) yyerror("Out of memory");
+    
+    no->tipo = TIPO_CONDICIONAL; 
+    no->valor_s = NULL;
+    no->operacao = 0;
+    
+    
+    no->filho[0] = cond;       
+    no->filho[1] = then_bloco; 
+    no->filho[2] = else_bloco; 
+    
+    
+    for (int i = 3; i < MAXCHILDREN; i++) {
+        no->filho[i] = NULL;
+    }
+    
+    return no;
+}
+
+TreeNode* novo_no_while(TreeNode* condicao, TreeNode* corpo) {
+    TreeNode *no = (TreeNode*) malloc(sizeof(TreeNode));
+    no->tipo = TIPO_WHILE;
+    no->valor_s = NULL;
+    no->operacao = 0;
+    
+    no->filho[0] = condicao;
+    no->filho[1] = corpo;
+    
+    for (int i = 2; i < MAXCHILDREN; i++) no->filho[i] = NULL;
+    return no;
+}
+
+
+TreeNode* novo_no_programa(char* nome_prog, TreeNode* corpo) {
+    TreeNode *no = (TreeNode*) malloc(sizeof(TreeNode));
+    no->tipo = TIPO_PROGRAMA;
+    no->valor_s = strdup(nome_prog);
+    no->operacao = 0;
+    
+    no->filho[0] = corpo; 
+    
+    for (int i = 1; i < MAXCHILDREN; i++) no->filho[i] = NULL;
+    return no;
+}
+
+TreeNode* novo_no_chamada(TreeNode* id, TreeNode* args) {
+    TreeNode *no = (TreeNode*) malloc(sizeof(TreeNode));
+    no->tipo = TIPO_CHAMADA;
+    no->valor_s = NULL;
+    no->operacao = 0;
+    no->filho[0] = id;   
+    no->filho[1] = args; 
+    for(int i=2; i<MAXCHILDREN; i++) no->filho[i] = NULL;
+    return no;
+}
+
+TreeNode* novo_no_io(TipoNo tipo, TreeNode* args) {
+    TreeNode *no = (TreeNode*) malloc(sizeof(TreeNode));
+    no->tipo = tipo; // TIPO_LEITURA ou TIPO_ESCRITA
+    no->valor_s = NULL;
+    no->operacao = 0;
+    no->filho[0] = args;
+    for(int i=1; i<MAXCHILDREN; i++) no->filho[i] = NULL;
+    return no;
+}
+
+TreeNode* novo_no_subrotina(char* nome, TreeNode* params, char* tipo_retorno, TreeNode* corpo) {
+    TreeNode *no = (TreeNode*) malloc(sizeof(TreeNode));
+    no->tipo = TIPO_SUBROTINA;
+    no->valor_s = strdup(nome);
+    
+    no->filho[0] = params;
+    no->filho[1] = corpo;
+    
+    
+    if (tipo_retorno != NULL) {
+       
+        TreeNode* no_tipo = (TreeNode*) malloc(sizeof(TreeNode));
+        no_tipo->tipo = TIPO_ID; 
+        no_tipo->valor_s = strdup(tipo_retorno);
+        for(int i=0; i<MAXCHILDREN; i++) no_tipo->filho[i]=NULL;
+        
+        no->filho[2] = no_tipo; 
+    } else {
+        no->filho[2] = NULL;
+    }
+
+    for(int i=3; i<MAXCHILDREN; i++) no->filho[i] = NULL;
+    return no;
+}
+
+TreeNode* novo_no_bool_literal(char* valor) {
+    TreeNode *no = (TreeNode*) malloc(sizeof(TreeNode));
+    no->tipo = TIPO_BOOL_LITERAL;
+    no->valor_s = strdup(valor); /* "true" ou "false" */
+    no->operacao = 0;
+    
+    for (int i = 0; i < MAXCHILDREN; i++) {
+        no->filho[i] = NULL;
+    }
+    return no;
+}
+
+void processar_declaracao_vars(TreeNode* lista_ids, char* tipo) {
+    if (lista_ids == NULL) return;
+
+    if (lista_ids->tipo == TIPO_ID) {
+        // caso base: um ID sozinho
+        inserir_simbolo(lista_ids->valor_s, tipo);
+    } 
+    else if (lista_ids->tipo == TIPO_LISTA) {
+        // caso recursivo: lista de IDs
+        processar_declaracao_vars(lista_ids->filho[0], tipo); 
+        processar_declaracao_vars(lista_ids->filho[1], tipo); 
+    }
 }
