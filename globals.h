@@ -12,13 +12,20 @@ typedef struct Simbolo {
     char *nome;
     char *tipo;
     
+    
     struct Simbolo *proximo; 
 } Simbolo;
 
 Simbolo* buscar_simbolo(char *nome);
 void inserir_simbolo(char *nome, char *tipo);
 
-
+//tipos
+typedef enum {
+    EXP_VOID,    /* Para comandos que não retornam valor */
+    EXP_INTEGER,
+    EXP_BOOLEAN,
+    EXP_ERRO     /* Para propagar que já houve erro */
+} ExpType;
 
 typedef enum {
     TIPO_ID,
@@ -42,6 +49,7 @@ typedef struct TreeNode {
   TipoNo tipo;
   char *valor_s;
   int operacao;
+  ExpType tipo_dado;
   
   struct TreeNode *filho[MAXCHILDREN]; 
   
@@ -62,6 +70,7 @@ TreeNode* novo_no_io(TipoNo tipo, TreeNode* args);
 TreeNode* novo_no_subrotina(char* nome, TreeNode* params, char* tipo_retorno, TreeNode* corpo);
 TreeNode* novo_no_bool_literal(char* valor);
 void processar_declaracao_vars(TreeNode* lista_ids, char* tipo);
+ExpType string_para_tipo(char* tipo_str);
 void yyerror(const char *s);
 
 extern TreeNode *savedTree;

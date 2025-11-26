@@ -586,10 +586,10 @@ static const yytype_int16 yyrline[] =
       97,    98,   106,   114,   126,   127,   135,   136,   140,   145,
      152,   153,   157,   166,   175,   176,   180,   187,   188,   196,
      205,   212,   213,   221,   222,   223,   224,   225,   226,   227,
-     231,   242,   253,   257,   264,   271,   278,   285,   286,   294,
-     295,   299,   300,   308,   309,   310,   311,   312,   313,   317,
-     318,   325,   326,   327,   331,   332,   339,   340,   341,   345,
-     351,   356,   358,   360,   362,   368,   376,   377
+     231,   258,   269,   278,   289,   299,   306,   313,   314,   322,
+     323,   327,   328,   336,   337,   338,   339,   340,   341,   345,
+     346,   353,   354,   355,   359,   360,   367,   368,   369,   373,
+     379,   384,   386,   388,   390,   396,   404,   405
 };
 #endif
 
@@ -1390,7 +1390,7 @@ yyreduce:
 #line 158 "sintatico_novo.y"
     {
         inserir_simbolo((yyvsp[-3].sval), "procedure");
-        /* Procedure não tem tipo de retorno (NULL) e o corpo é $5 */
+        /* nas procedure não tem tipo de retorno (NULL) e o corpo é $5 */
         (yyval.no_ast) = novo_no_subrotina((yyvsp[-3].sval), (yyvsp[-2].no_ast), NULL, (yyvsp[0].no_ast));
     }
 #line 1397 "sintatico_novo.tab.c"
@@ -1400,7 +1400,7 @@ yyreduce:
 #line 167 "sintatico_novo.y"
     {
         inserir_simbolo((yyvsp[-5].sval), "function");
-        /* Function tem tipo ($5) e o corpo é $7 */
+        /* function tem seu tipo ($5) e o corpo é $7 */
         (yyval.no_ast) = novo_no_subrotina((yyvsp[-5].sval), (yyvsp[-4].no_ast), (yyvsp[-2].sval), (yyvsp[0].no_ast));
     }
 #line 1407 "sintatico_novo.tab.c"
@@ -1421,7 +1421,7 @@ yyreduce:
   case 26: /* parametros_formais: TOKEN_ABREPAR declaracao_parametros_lista TOKEN_FECHAPAR  */
 #line 181 "sintatico_novo.y"
     {
-        (yyval.no_ast) = (yyvsp[-1].no_ast); /* Repassa a lista que foi criada dentro */
+        (yyval.no_ast) = (yyvsp[-1].no_ast); /* passar a lista que foi criada */
     }
 #line 1427 "sintatico_novo.tab.c"
     break;
@@ -1435,7 +1435,7 @@ yyreduce:
   case 28: /* declaracao_parametros_lista: declaracao_parametros_lista TOKEN_PONTOVIRG declaracao_parametros  */
 #line 189 "sintatico_novo.y"
     {
-        /* Lista de declarações de parâmetros */
+        /* nova lista de declarações de parâmetros */
         (yyval.no_ast) = novo_no_lista((yyvsp[0].no_ast), (yyvsp[-2].no_ast));
     }
 #line 1442 "sintatico_novo.tab.c"
@@ -1444,7 +1444,7 @@ yyreduce:
   case 29: /* declaracao_parametros: lista_identificadores TOKEN_DOISP tipo  */
 #line 197 "sintatico_novo.y"
     {
-        /* Mesma lógica de variáveis: processa tipo e retorna a lista de IDs */
+        /* mesma lógica de variáveis: processa o tipo e retorna a lista de IDs */
         processar_declaracao_vars((yyvsp[-2].no_ast), (yyvsp[0].sval)); 
         (yyval.no_ast) = (yyvsp[-2].no_ast); 
     }
@@ -1454,7 +1454,7 @@ yyreduce:
   case 30: /* comando_composto: TOKEN_BEGIN comando_lista TOKEN_END  */
 #line 206 "sintatico_novo.y"
     {
-        (yyval.no_ast) = (yyvsp[-1].no_ast); /* O valor é a própria lista de comandos */
+        (yyval.no_ast) = (yyvsp[-1].no_ast); /* o valor é a própria lista de comandos */
     }
 #line 1460 "sintatico_novo.tab.c"
     break;
@@ -1468,7 +1468,7 @@ yyreduce:
   case 32: /* comando_lista: comando_lista TOKEN_PONTOVIRG comando  */
 #line 214 "sintatico_novo.y"
     {
-        /* Cria lista encadeada de comandos */
+        /* criar a  lista encadeada de comandos */
         (yyval.no_ast) = novo_no_lista((yyvsp[-2].no_ast), (yyvsp[0].no_ast)); // Atenção: pode precisar ajustar a ordem dependendo da sua função lista
     }
 #line 1475 "sintatico_novo.tab.c"
@@ -1519,271 +1519,299 @@ yyreduce:
   case 40: /* atribuicao: ID TOKEN_ATRIB expressao  */
 #line 232 "sintatico_novo.y"
     {
-        if (buscar_simbolo((yyvsp[-2].sval)) == NULL) {
+        Simbolo *s = buscar_simbolo((yyvsp[-2].sval));
+        if (s == NULL) {
              printf("ERRO SEMANTICO: Variavel '%s' nao declarada.\n", (yyvsp[-2].sval));
-             // exit(1); ou yyerror
+             /* Tratar erro */
         }
-        (yyval.no_ast) = novo_no_atribuicao(novo_no_id((yyvsp[-2].sval)), (yyvsp[0].no_ast));
+        // $$ = novo_no_atribuicao(novo_no_id($1), $3);
+        TreeNode* no_id = novo_no_id((yyvsp[-2].sval)); 
+        TreeNode* no_expr = (yyvsp[0].no_ast);           
+        
+        if (no_id->tipo_dado != EXP_ERRO && no_expr->tipo_dado != EXP_ERRO) {
+            if (no_id->tipo_dado != no_expr->tipo_dado) {
+                printf("ERRO SEMANTICO (Linha %d): Atribuicao invalida. ", yylineno);
+                printf("Variavel '%s' eh do tipo %s, mas recebeu %s.\n", 
+                        (yyvsp[-2].sval), 
+                        (no_id->tipo_dado == EXP_INTEGER ? "INTEGER" : "BOOLEAN"),
+                        (no_expr->tipo_dado == EXP_INTEGER ? "INTEGER" : "BOOLEAN")
+                );
+            }
+        }
+
+        (yyval.no_ast) = novo_no_atribuicao(no_id, no_expr);
     }
-#line 1529 "sintatico_novo.tab.c"
+#line 1545 "sintatico_novo.tab.c"
     break;
 
   case 41: /* chamada_procedimento: ID TOKEN_ABREPAR lista_expressoes_opcional TOKEN_FECHAPAR  */
-#line 243 "sintatico_novo.y"
+#line 259 "sintatico_novo.y"
     {
-        /* Verifica se foi declarado */
-        if (buscar_simbolo((yyvsp[-3].sval)) == NULL) printf("Erro: Proc '%s' nao declarado\n", (yyvsp[-3].sval));
+        /* verificar se foi declarado */
+        if (buscar_simbolo((yyvsp[-3].sval)) == NULL) printf("Erro: Procedimento '%s' nao declarado\n", (yyvsp[-3].sval));
         
-        /* Cria o nó */
+        /* criar o nó */
         (yyval.no_ast) = novo_no_chamada( novo_no_id((yyvsp[-3].sval)), (yyvsp[-1].no_ast) );
-    }
-#line 1541 "sintatico_novo.tab.c"
-    break;
-
-  case 42: /* condicional: TOKEN_IF expressao TOKEN_THEN comando  */
-#line 254 "sintatico_novo.y"
-    {
-        (yyval.no_ast) = novo_no_condicional((yyvsp[-2].no_ast), (yyvsp[0].no_ast), NULL);
-    }
-#line 1549 "sintatico_novo.tab.c"
-    break;
-
-  case 43: /* condicional: TOKEN_IF expressao TOKEN_THEN comando TOKEN_ELSE comando  */
-#line 258 "sintatico_novo.y"
-    {
-        (yyval.no_ast) = novo_no_condicional((yyvsp[-4].no_ast), (yyvsp[-2].no_ast), (yyvsp[0].no_ast));
     }
 #line 1557 "sintatico_novo.tab.c"
     break;
 
-  case 44: /* repeticao: TOKEN_WHILE expressao TOKEN_DO comando  */
-#line 265 "sintatico_novo.y"
+  case 42: /* condicional: TOKEN_IF expressao TOKEN_THEN comando  */
+#line 270 "sintatico_novo.y"
     {
+        if ((yyvsp[-2].no_ast)->tipo_dado != EXP_BOOLEAN && (yyvsp[-2].no_ast)->tipo_dado != EXP_ERRO) {
+             printf("ERRO SEMANTICO (Linha %d): A condicao do 'IF' deve ser booleana.\n", yylineno);
+             printf("Tipagem encontrada: INTEGER.\n"); 
+        }
+        
+        (yyval.no_ast) = novo_no_condicional((yyvsp[-2].no_ast), (yyvsp[0].no_ast), NULL);
+    }
+#line 1570 "sintatico_novo.tab.c"
+    break;
+
+  case 43: /* condicional: TOKEN_IF expressao TOKEN_THEN comando TOKEN_ELSE comando  */
+#line 279 "sintatico_novo.y"
+    {
+        if ((yyvsp[-4].no_ast)->tipo_dado != EXP_BOOLEAN && (yyvsp[-4].no_ast)->tipo_dado != EXP_ERRO) {
+             printf("ERRO SEMANTICO (Linha %d): A condicao do 'IF' deve ser booleana.\n", yylineno);
+        }
+
+        (yyval.no_ast) = novo_no_condicional((yyvsp[-4].no_ast), (yyvsp[-2].no_ast), (yyvsp[0].no_ast));
+    }
+#line 1582 "sintatico_novo.tab.c"
+    break;
+
+  case 44: /* repeticao: TOKEN_WHILE expressao TOKEN_DO comando  */
+#line 290 "sintatico_novo.y"
+    {
+        if ((yyvsp[-2].no_ast)->tipo_dado != EXP_BOOLEAN && (yyvsp[-2].no_ast)->tipo_dado != EXP_ERRO) {
+             printf("ERRO SEMANTICO (Linha %d): A condicao do 'WHILE' deve ser booleana.\n", yylineno);
+        }
         (yyval.no_ast) = novo_no_while((yyvsp[-2].no_ast), (yyvsp[0].no_ast));
     }
-#line 1565 "sintatico_novo.tab.c"
+#line 1593 "sintatico_novo.tab.c"
     break;
 
   case 45: /* leitura: TOKEN_READ TOKEN_ABREPAR lista_identificadores TOKEN_FECHAPAR  */
-#line 272 "sintatico_novo.y"
+#line 300 "sintatico_novo.y"
     {
         (yyval.no_ast) = novo_no_io(TIPO_LEITURA, (yyvsp[-1].no_ast));
     }
-#line 1573 "sintatico_novo.tab.c"
+#line 1601 "sintatico_novo.tab.c"
     break;
 
   case 46: /* escrita: TOKEN_WRITE TOKEN_ABREPAR lista_expressoes TOKEN_FECHAPAR  */
-#line 279 "sintatico_novo.y"
+#line 307 "sintatico_novo.y"
     {
         (yyval.no_ast) = novo_no_io(TIPO_ESCRITA, (yyvsp[-1].no_ast));
     }
-#line 1581 "sintatico_novo.tab.c"
+#line 1609 "sintatico_novo.tab.c"
     break;
 
   case 47: /* lista_expressoes: expressao  */
-#line 285 "sintatico_novo.y"
+#line 313 "sintatico_novo.y"
               { (yyval.no_ast) = (yyvsp[0].no_ast); }
-#line 1587 "sintatico_novo.tab.c"
+#line 1615 "sintatico_novo.tab.c"
     break;
 
   case 48: /* lista_expressoes: lista_expressoes TOKEN_VIRG expressao  */
-#line 287 "sintatico_novo.y"
+#line 315 "sintatico_novo.y"
     {
-        /* Caso recursivo: cria a lista encadeada */
+        /* no caso recursivo, cria a lista encadeada */
         (yyval.no_ast) = novo_no_lista((yyvsp[0].no_ast), (yyvsp[-2].no_ast)); // Ou ($1, $3) dependendo da ordem que preferir
     }
-#line 1596 "sintatico_novo.tab.c"
+#line 1624 "sintatico_novo.tab.c"
     break;
 
   case 49: /* lista_expressoes_opcional: %empty  */
-#line 294 "sintatico_novo.y"
+#line 322 "sintatico_novo.y"
           { (yyval.no_ast) = NULL; }
-#line 1602 "sintatico_novo.tab.c"
+#line 1630 "sintatico_novo.tab.c"
     break;
 
   case 50: /* lista_expressoes_opcional: lista_expressoes  */
-#line 295 "sintatico_novo.y"
+#line 323 "sintatico_novo.y"
                        { (yyval.no_ast) = (yyvsp[0].no_ast); }
-#line 1608 "sintatico_novo.tab.c"
+#line 1636 "sintatico_novo.tab.c"
     break;
 
   case 51: /* expressao: expressao_simples  */
-#line 299 "sintatico_novo.y"
+#line 327 "sintatico_novo.y"
                       { (yyval.no_ast) = (yyvsp[0].no_ast); }
-#line 1614 "sintatico_novo.tab.c"
+#line 1642 "sintatico_novo.tab.c"
     break;
 
   case 52: /* expressao: expressao_simples relacao expressao_simples  */
-#line 301 "sintatico_novo.y"
+#line 329 "sintatico_novo.y"
     {
-        /* relacao retorna o TOKEN (int), usamos novo_no_operacao */
+        /* relacao retorna o TOKEN (int) usa novo_no_operacao */
         (yyval.no_ast) = novo_no_operacao((yyvsp[-2].no_ast), (yyvsp[-1].ival), (yyvsp[0].no_ast)); 
     }
-#line 1623 "sintatico_novo.tab.c"
+#line 1651 "sintatico_novo.tab.c"
     break;
 
   case 53: /* relacao: TOKEN_IGUAL  */
-#line 308 "sintatico_novo.y"
+#line 336 "sintatico_novo.y"
                 { (yyval.ival) = TOKEN_IGUAL; }
-#line 1629 "sintatico_novo.tab.c"
+#line 1657 "sintatico_novo.tab.c"
     break;
 
   case 54: /* relacao: TOKEN_DIF  */
-#line 309 "sintatico_novo.y"
+#line 337 "sintatico_novo.y"
                 { (yyval.ival) = TOKEN_DIF; }
-#line 1635 "sintatico_novo.tab.c"
+#line 1663 "sintatico_novo.tab.c"
     break;
 
   case 55: /* relacao: TOKEN_MENOR  */
-#line 310 "sintatico_novo.y"
+#line 338 "sintatico_novo.y"
                   { (yyval.ival) = TOKEN_MENOR; }
-#line 1641 "sintatico_novo.tab.c"
+#line 1669 "sintatico_novo.tab.c"
     break;
 
   case 56: /* relacao: TOKEN_MENORIGUAL  */
-#line 311 "sintatico_novo.y"
+#line 339 "sintatico_novo.y"
                        {(yyval.ival) = TOKEN_MENORIGUAL;}
-#line 1647 "sintatico_novo.tab.c"
+#line 1675 "sintatico_novo.tab.c"
     break;
 
   case 57: /* relacao: TOKEN_MAIOR  */
-#line 312 "sintatico_novo.y"
+#line 340 "sintatico_novo.y"
                   {(yyval.ival) = TOKEN_MAIOR;}
-#line 1653 "sintatico_novo.tab.c"
+#line 1681 "sintatico_novo.tab.c"
     break;
 
   case 58: /* relacao: TOKEN_MAIORIGUAL  */
-#line 313 "sintatico_novo.y"
+#line 341 "sintatico_novo.y"
                        {(yyval.ival) = TOKEN_MAIORIGUAL;}
-#line 1659 "sintatico_novo.tab.c"
+#line 1687 "sintatico_novo.tab.c"
     break;
 
   case 59: /* expressao_simples: termo  */
-#line 317 "sintatico_novo.y"
+#line 345 "sintatico_novo.y"
           { (yyval.no_ast) = (yyvsp[0].no_ast); }
-#line 1665 "sintatico_novo.tab.c"
+#line 1693 "sintatico_novo.tab.c"
     break;
 
   case 60: /* expressao_simples: expressao_simples op_aditivo termo  */
-#line 319 "sintatico_novo.y"
+#line 347 "sintatico_novo.y"
     {
         (yyval.no_ast) = novo_no_operacao((yyvsp[-2].no_ast), (yyvsp[-1].ival), (yyvsp[0].no_ast));
     }
-#line 1673 "sintatico_novo.tab.c"
+#line 1701 "sintatico_novo.tab.c"
     break;
 
   case 61: /* op_aditivo: TOKEN_SOMA  */
-#line 325 "sintatico_novo.y"
+#line 353 "sintatico_novo.y"
                { (yyval.ival) = TOKEN_SOMA; }
-#line 1679 "sintatico_novo.tab.c"
+#line 1707 "sintatico_novo.tab.c"
     break;
 
   case 62: /* op_aditivo: TOKEN_SUBT  */
-#line 326 "sintatico_novo.y"
+#line 354 "sintatico_novo.y"
                  { (yyval.ival) = TOKEN_SUBT; }
-#line 1685 "sintatico_novo.tab.c"
+#line 1713 "sintatico_novo.tab.c"
     break;
 
   case 63: /* op_aditivo: TOKEN_OR  */
-#line 327 "sintatico_novo.y"
+#line 355 "sintatico_novo.y"
                  { (yyval.ival) = TOKEN_OR; }
-#line 1691 "sintatico_novo.tab.c"
+#line 1719 "sintatico_novo.tab.c"
     break;
 
   case 64: /* termo: fator  */
-#line 331 "sintatico_novo.y"
+#line 359 "sintatico_novo.y"
           { (yyval.no_ast) = (yyvsp[0].no_ast); }
-#line 1697 "sintatico_novo.tab.c"
+#line 1725 "sintatico_novo.tab.c"
     break;
 
   case 65: /* termo: termo op_multiplicativo fator  */
-#line 333 "sintatico_novo.y"
+#line 361 "sintatico_novo.y"
     {
         (yyval.no_ast) = novo_no_operacao((yyvsp[-2].no_ast), (yyvsp[-1].ival), (yyvsp[0].no_ast));
     }
-#line 1705 "sintatico_novo.tab.c"
+#line 1733 "sintatico_novo.tab.c"
     break;
 
   case 66: /* op_multiplicativo: TOKEN_MULT  */
-#line 339 "sintatico_novo.y"
+#line 367 "sintatico_novo.y"
                { (yyval.ival) = TOKEN_MULT; }
-#line 1711 "sintatico_novo.tab.c"
+#line 1739 "sintatico_novo.tab.c"
     break;
 
   case 67: /* op_multiplicativo: TOKEN_DIV  */
-#line 340 "sintatico_novo.y"
+#line 368 "sintatico_novo.y"
                  { (yyval.ival) = TOKEN_DIV; }
-#line 1717 "sintatico_novo.tab.c"
+#line 1745 "sintatico_novo.tab.c"
     break;
 
   case 68: /* op_multiplicativo: TOKEN_AND  */
-#line 341 "sintatico_novo.y"
+#line 369 "sintatico_novo.y"
                  { (yyval.ival) = TOKEN_AND; }
-#line 1723 "sintatico_novo.tab.c"
+#line 1751 "sintatico_novo.tab.c"
     break;
 
   case 69: /* fator: ID  */
-#line 346 "sintatico_novo.y"
+#line 374 "sintatico_novo.y"
     { 
-        if(buscar_simbolo((yyvsp[0].sval)) == NULL) printf("Erro: %s nao declarado\n", (yyvsp[0].sval));
+        if(buscar_simbolo((yyvsp[0].sval)) == NULL) printf("Erro: '%s' nao declarado\n", (yyvsp[0].sval));
         (yyval.no_ast) = novo_no_id((yyvsp[0].sval)); 
     }
-#line 1732 "sintatico_novo.tab.c"
+#line 1760 "sintatico_novo.tab.c"
     break;
 
   case 70: /* fator: ID TOKEN_ABREPAR lista_expressoes_opcional TOKEN_FECHAPAR  */
-#line 352 "sintatico_novo.y"
+#line 380 "sintatico_novo.y"
     {
         if (buscar_simbolo((yyvsp[-3].sval)) == NULL) printf("Erro: Func '%s' nao declarada\n", (yyvsp[-3].sval));
         (yyval.no_ast) = novo_no_chamada( novo_no_id((yyvsp[-3].sval)), (yyvsp[-1].no_ast) );
     }
-#line 1741 "sintatico_novo.tab.c"
+#line 1769 "sintatico_novo.tab.c"
     break;
 
   case 71: /* fator: NUMERO  */
-#line 356 "sintatico_novo.y"
+#line 384 "sintatico_novo.y"
              { (yyval.no_ast) = novo_no_num((yyvsp[0].sval)); }
-#line 1747 "sintatico_novo.tab.c"
+#line 1775 "sintatico_novo.tab.c"
     break;
 
   case 73: /* fator: TOKEN_ABREPAR expressao TOKEN_FECHAPAR  */
-#line 360 "sintatico_novo.y"
+#line 388 "sintatico_novo.y"
                                              { (yyval.no_ast) = (yyvsp[-1].no_ast); }
-#line 1753 "sintatico_novo.tab.c"
+#line 1781 "sintatico_novo.tab.c"
     break;
 
   case 74: /* fator: TOKEN_NOT fator  */
-#line 363 "sintatico_novo.y"
+#line 391 "sintatico_novo.y"
     {
-        /* Operação unária: nó de operação com filho esquerda NULL (ou o contrário) */
+        /* operação unária: nó de operação com filho esquerda NULL (ou o contrário) */
         (yyval.no_ast) = novo_no_operacao(NULL, TOKEN_NOT, (yyvsp[0].no_ast));
     }
-#line 1762 "sintatico_novo.tab.c"
+#line 1790 "sintatico_novo.tab.c"
     break;
 
   case 75: /* fator: TOKEN_SUBT fator  */
-#line 369 "sintatico_novo.y"
+#line 397 "sintatico_novo.y"
     {
-        /* Menos unário (ex: -5). Tratamos como operação unária */
+        /* menos unário (ex: -5). tratar como operação unária */
         (yyval.no_ast) = novo_no_operacao(NULL, TOKEN_SUBT, (yyvsp[0].no_ast));
     }
-#line 1771 "sintatico_novo.tab.c"
+#line 1799 "sintatico_novo.tab.c"
     break;
 
   case 76: /* logico: TOKEN_FALSE  */
-#line 376 "sintatico_novo.y"
+#line 404 "sintatico_novo.y"
                 { (yyval.no_ast) = novo_no_bool_literal("false"); }
-#line 1777 "sintatico_novo.tab.c"
+#line 1805 "sintatico_novo.tab.c"
     break;
 
   case 77: /* logico: TOKEN_TRUE  */
-#line 377 "sintatico_novo.y"
+#line 405 "sintatico_novo.y"
                  { (yyval.no_ast) = novo_no_bool_literal("true"); }
-#line 1783 "sintatico_novo.tab.c"
+#line 1811 "sintatico_novo.tab.c"
     break;
 
 
-#line 1787 "sintatico_novo.tab.c"
+#line 1815 "sintatico_novo.tab.c"
 
       default: break;
     }
@@ -1976,7 +2004,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 380 "sintatico_novo.y"
+#line 408 "sintatico_novo.y"
 
 
     TreeNode *savedTree = NULL;
@@ -2017,7 +2045,7 @@ yyreturnlab:
         yylineno = 1;
         
         printf("\n--- Iniciando Fase 2: Análise Sintática ---\n");
-        yydebug = 1; 
+        yydebug = 0; 
         
         int resultado_parse = yyparse(); 
     

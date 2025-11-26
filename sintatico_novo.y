@@ -230,11 +230,27 @@ comando:
 atribuicao:
     ID TOKEN_ATRIB expressao
     {
-        if (buscar_simbolo($1) == NULL) {
-             printf("Erro semântico: Variavel '%s' nao declarada.\n", $1);
-             // exit(1); ou yyerror
+        Simbolo *s = buscar_simbolo($1);
+        if (s == NULL) {
+             printf("ERRO SEMANTICO: Variavel '%s' nao declarada.\n", $1);
+             /* Tratar erro */
         }
-        $$ = novo_no_atribuicao(novo_no_id($1), $3);
+        // $$ = novo_no_atribuicao(novo_no_id($1), $3);
+        TreeNode* no_id = novo_no_id($1); 
+        TreeNode* no_expr = $3;           
+        
+        if (no_id->tipo_dado != EXP_ERRO && no_expr->tipo_dado != EXP_ERRO) {
+            if (no_id->tipo_dado != no_expr->tipo_dado) {
+                printf("ERRO SEMANTICO (Linha %d): Atribuicao invalida. ", yylineno);
+                printf("Variavel '%s' eh do tipo %s, mas recebeu %s.\n", 
+                        $1, 
+                        (no_id->tipo_dado == EXP_INTEGER ? "INTEGER" : "BOOLEAN"),
+                        (no_expr->tipo_dado == EXP_INTEGER ? "INTEGER" : "BOOLEAN")
+                );
+            }
+        }
+
+        $$ = novo_no_atribuicao(no_id, no_expr);
     }
     ;
 
@@ -252,10 +268,19 @@ chamada_procedimento:
 condicional:
     TOKEN_IF expressao TOKEN_THEN comando
     {
+        if ($2->tipo_dado != EXP_BOOLEAN && $2->tipo_dado != EXP_ERRO) {
+             printf("ERRO SEMANTICO (Linha %d): A condicao do 'IF' deve ser booleana.\n", yylineno);
+             printf("Tipagem encontrada: INTEGER.\n"); 
+        }
+        
         $$ = novo_no_condicional($2, $4, NULL);
     }
     | TOKEN_IF expressao TOKEN_THEN comando TOKEN_ELSE comando
     {
+        if ($2->tipo_dado != EXP_BOOLEAN && $2->tipo_dado != EXP_ERRO) {
+             printf("ERRO SEMANTICO (Linha %d): A condicao do 'IF' deve ser booleana.\n", yylineno);
+        }
+
         $$ = novo_no_condicional($2, $4, $6);
     }
     ;
@@ -263,6 +288,9 @@ condicional:
 repeticao:
     TOKEN_WHILE expressao TOKEN_DO comando
     {
+        if ($2->tipo_dado != EXP_BOOLEAN && $2->tipo_dado != EXP_ERRO) {
+             printf("ERRO SEMANTICO (Linha %d): A condicao do 'WHILE' deve ser booleana.\n", yylineno);
+        }
         $$ = novo_no_while($2, $4);
     }
     ;
@@ -344,7 +372,7 @@ op_multiplicativo:
 fator:
     ID 
     { 
-        if(buscar_simbolo($1) == NULL) printf("Erro: "%s" nao declarado\n", $1);
+        if(buscar_simbolo($1) == NULL) printf("Erro: '%s' nao declarado\n", $1);
         $$ = novo_no_id($1); 
     }
 
@@ -417,7 +445,7 @@ logico:
         yylineno = 1;
         
         printf("\n--- Iniciando Fase 2: Análise Sintática ---\n");
-        yydebug = 1; 
+        yydebug = 0; 
         
         int resultado_parse = yyparse(); 
     
