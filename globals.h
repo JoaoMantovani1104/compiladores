@@ -8,16 +8,27 @@
 
 #define MAXCHILDREN 5
 
+typedef enum {
+    CATEGORIA_VARIABLE,
+    CATEGORIA_TYPE,
+    CATEGORIA_PROCEDURE,
+    CATEGORIA_FUNCTION
+} CategoriaSimbolo;
+
 typedef struct Simbolo {
     char *nome;
     char *tipo;
-    
-    
-    struct Simbolo *proximo; 
+    CategoriaSimbolo categoria;
+    struct Simbolo *proximo;
 } Simbolo;
 
 Simbolo* buscar_simbolo(char *nome);
+Simbolo* buscar_simbolo_no_escopo_atual(char *nome); // Buscar apenas no escopo atual
 void inserir_simbolo(char *nome, char *tipo);
+void inserir_simbolo_com_categoria(char *nome, char *tipo, CategoriaSimbolo categoria);
+void inicializar_tipos_primitivos();
+void abrir_escopo();
+void fechar_escopo();
 
 //tipos
 typedef enum {
@@ -33,14 +44,14 @@ typedef enum {
     TIPO_ATRIBUICAO,
     TIPO_OPERACAO,
     TIPO_LISTA,
-    TIPO_CONDICIONAL, 
+    TIPO_CONDICIONAL,
     TIPO_PROGRAMA,    /* Nó raiz */
-    TIPO_VAR_DECL,    
+    TIPO_VAR_DECL,
     TIPO_SUBROTINA,   /* Procedure ou Function */
-    TIPO_WHILE,       
-    TIPO_LEITURA,     
-    TIPO_ESCRITA,     
-    TIPO_CHAMADA,      
+    TIPO_WHILE,
+    TIPO_LEITURA,
+    TIPO_ESCRITA,
+    TIPO_CHAMADA,
     TIPO_BOOL_LITERAL
 } TipoNo;
 
@@ -50,9 +61,9 @@ typedef struct TreeNode {
   char *valor_s;
   int operacao;
   ExpType tipo_dado;
-  
-  struct TreeNode *filho[MAXCHILDREN]; 
-  
+
+  struct TreeNode *filho[MAXCHILDREN];
+
 } TreeNode;
 
 
@@ -70,13 +81,35 @@ TreeNode* novo_no_io(TipoNo tipo, TreeNode* args);
 TreeNode* novo_no_subrotina(char* nome, TreeNode* params, char* tipo_retorno, TreeNode* corpo);
 TreeNode* novo_no_bool_literal(char* valor);
 void processar_declaracao_vars(TreeNode* lista_ids, char* tipo);
+void processar_declaracao_params(TreeNode* lista_ids, char* tipo);
 ExpType string_para_tipo(char* tipo_str);
+void verificar_lista_identificadores_read(TreeNode* lista_ids);
+void verificar_lista_expressoes_write(TreeNode* lista_expr);
 void yyerror(const char *s);
 
 extern TreeNode *savedTree;
-extern Simbolo *tabela_de_simbolos; 
+extern Simbolo *tabela_de_simbolos;
 extern int yylineno;
 extern char *yytext;
 
+// Estruturas para armazenar erros
+typedef struct Erro {
+    char *mensagem;
+    struct Erro *proximo;
+} Erro;
 
-#endif  
+// Funções para gerenciar erros
+void adicionar_erro_lexico(const char *mensagem);
+void adicionar_erro_sintatico(const char *mensagem);
+void adicionar_erro_semantico(const char *mensagem);
+void exibir_erros_lexicos();
+void exibir_erros_sintaticos();
+void exibir_erros_semanticos();
+void limpar_erros_lexicos();
+void limpar_erros_sintaticos();
+void limpar_erros_semanticos();
+int contar_erros_lexicos();
+int contar_erros_sintaticos();
+int contar_erros_semanticos();
+
+#endif

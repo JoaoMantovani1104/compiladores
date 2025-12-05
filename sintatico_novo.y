@@ -7,16 +7,33 @@
     /* Declaração das funções que o Bison precisará */
     int yylex(); // A função do analisador léxico (gerada pelo Flex)
     void yyerror(const char *s); // A função para reportar erros
-    int contador_erros_lexicos = 0;
+    void inicializar_tipos_primitivos(); // Inicializa tipos primitivos na tabela
+    void inserir_simbolo_com_categoria(char *nome, char *tipo, CategoriaSimbolo categoria);
+    void verificar_lista_identificadores_read(TreeNode* lista_ids);
+    void verificar_lista_expressoes_write(TreeNode* lista_expr);
+    void abrir_escopo(); // Abre um novo escopo
+    void fechar_escopo(); // Fecha o escopo atual
+    void adicionar_erro_semantico(const char *mensagem);
+    void adicionar_erro_sintatico(const char *mensagem);
+    void limpar_erros_lexicos();
+    void limpar_erros_sintaticos();
+    void limpar_erros_semanticos();
+    int contar_erros_lexicos();
+    int contar_erros_sintaticos();
+    int contar_erros_semanticos();
+    void exibir_erros_lexicos();
+    void exibir_erros_sintaticos();
+    void exibir_erros_semanticos();
+    extern int contador_erros_lexicos;
     extern FILE *yyin;
     extern int yylineno;
     extern char *yytext;
-    extern int yydebug; 
+    extern int yydebug;
     %}
 
     %union {
-        char *sval; 
-        int ival;  
+        char *sval;
+        int ival;
         struct TreeNode *no_ast;
     }
 
@@ -37,13 +54,24 @@
     %type <no_ast> expressao expressao_simples termo fator
     %type <no_ast> lista_expressoes lista_expressoes_opcional
     %type <no_ast> declaracao_subrotina declaracao_procedimento declaracao_funcao
+    %type <sval> declaracao_funcao_cabecalho
     %type <no_ast> secao_declaracao_subrotinas secao_declaracao_subrotinas_opcional
     %type <no_ast> parametros_formais parametros_formais_opcional
     %type <no_ast> declaracao_parametros_lista declaracao_parametros
     %type <ival> op_aditivo op_multiplicativo relacao /* Retornam o token (int) */
     %type <no_ast> logico
 
-    %debug 
+    /* Precedência de operadores - menos unário precisa ter precedência mais alta que binário */
+    %right TOKEN_NOT  /* Operador unário not */
+    %left TOKEN_OR
+    %left TOKEN_AND
+    %left TOKEN_SOMA TOKEN_SUBT  /* Operadores binários aditivos (subtração binária) */
+    %left TOKEN_MULT TOKEN_DIV   /* Operadores binários multiplicativos */
+    %nonassoc TOKEN_MENOR TOKEN_MENORIGUAL TOKEN_MAIOR TOKEN_MAIORIGUAL
+    %nonassoc TOKEN_IGUAL TOKEN_DIF
+    /* Nota: TOKEN_SUBT unário é tratado na regra fator: TOKEN_SUBT fator e tem precedência implícita mais alta */
+
+    %debug
 
     %start programa
 
@@ -67,12 +95,14 @@ bloco:
     }
     ;
 
-bloco_subrot:   
+bloco_subrot:
     secao_declaracao_variaveis_opcional
     comando_composto
     {
         /* Junta as variáveis locais ($1) com o corpo ($2) */
         $$ = novo_no_lista($1, $2);
+        /* Fechar escopo da subrotina ao finalizar o bloco */
+        fechar_escopo();
     }
     ;
 
@@ -137,10 +167,10 @@ tipo:
     ;
 
 secao_declaracao_subrotinas:
-    declaracao_subrotina TOKEN_PONTOVIRG 
-    { 
+    declaracao_subrotina TOKEN_PONTOVIRG
+    {
         $$ = $1; /* Caso base: uma subrotina */
-            
+
     }
     | secao_declaracao_subrotinas declaracao_subrotina TOKEN_PONTOVIRG
     {
@@ -156,29 +186,82 @@ declaracao_subrotina:
 declaracao_procedimento:
     TOKEN_PROCEDURE ID parametros_formais_opcional TOKEN_PONTOVIRG bloco_subrot
     {
-        inserir_simbolo($2, "procedure");
+        Simbolo* s = buscar_simbolo($2);
+        if (s != NULL) {
+            if (s->categoria == CATEGORIA_TYPE) {
+                char buffer[512];
+                snprintf(buffer, sizeof(buffer), "ERRO SEMANTICO (Linha %d): Nao e possivel redeclarar o tipo primitivo '%s' como procedure.\n", yylineno, $2);
+                adicionar_erro_semantico(buffer);
+            } else {
+                char buffer[512];
+                snprintf(buffer, sizeof(buffer), "ERRO SEMANTICO (Linha %d): Redeclaracao da procedure '%s'. Ela ja foi declarada anteriormente.\n", yylineno, $2);
+                adicionar_erro_semantico(buffer);
+            }
+        } else {
+            inserir_simbolo_com_categoria($2, "procedure", CATEGORIA_PROCEDURE);
+        }
+        /* Escopo já foi aberto em parametros_formais_opcional (se houver parâmetros) */
+        /* Se não houver parâmetros, abrir escopo aqui */
+        /* O escopo será fechado ao finalizar bloco_subrot */
         /* nas procedure não tem tipo de retorno (NULL) e o corpo é $5 */
         $$ = novo_no_subrotina($2, $3, NULL, $5);
     }
     ;
 
 declaracao_funcao:
-    TOKEN_FUNCTION ID parametros_formais_opcional TOKEN_DOISP tipo TOKEN_PONTOVIRG bloco_subrot
+    declaracao_funcao_cabecalho parametros_formais_opcional TOKEN_DOISP tipo TOKEN_PONTOVIRG bloco_subrot
     {
-        inserir_simbolo($2, "function");
-        /* function tem seu tipo ($5) e o corpo é $7 */
-        $$ = novo_no_subrotina($2, $3, $5, $7);
+        /* Function já foi inserida na tabela na regra intermediária declaracao_funcao_cabecalho */
+        /* Escopo já foi aberto em parametros_formais_opcional (se houver parâmetros) */
+        /* Se não houver parâmetros, abrir escopo aqui */
+        /* O escopo será fechado ao finalizar bloco_subrot */
+        /* function tem seu tipo ($4) e o corpo é $6 */
+        $$ = novo_no_subrotina($1, $2, $4, $6);
+        free($1); // Liberar string alocada em declaracao_funcao_cabecalho
+    }
+    ;
+
+declaracao_funcao_cabecalho:
+    TOKEN_FUNCTION ID
+    {
+        /* Inserir function na tabela IMEDIATAMENTE após ler o nome,
+           antes de processar parâmetros e corpo (parser bottom-up) */
+        Simbolo* s = buscar_simbolo($2);
+        if (s != NULL) {
+            if (s->categoria == CATEGORIA_TYPE) {
+                char buffer[512];
+                snprintf(buffer, sizeof(buffer), "ERRO SEMANTICO (Linha %d): Nao e possivel redeclarar o tipo primitivo '%s' como function.\n", yylineno, $2);
+                adicionar_erro_semantico(buffer);
+            } else if (s->categoria != CATEGORIA_FUNCTION) {
+                char buffer[512];
+                snprintf(buffer, sizeof(buffer), "ERRO SEMANTICO (Linha %d): Redeclaracao da function '%s'. Ela ja foi declarada anteriormente.\n", yylineno, $2);
+                adicionar_erro_semantico(buffer);
+            }
+        } else {
+            inserir_simbolo_com_categoria($2, "function", CATEGORIA_FUNCTION);
+        }
+        $$ = strdup($2); // Retornar nome da function como string
     }
     ;
 
 parametros_formais_opcional:
-    /* */ { $$ = NULL; }
-    | parametros_formais { $$ = $1; }
+    /* */ {
+        /* Se não há parâmetros, ainda precisamos abrir escopo para variáveis locais */
+        abrir_escopo();
+        $$ = NULL;
+    }
+    | parametros_formais {
+        /* Escopo já foi aberto em parametros_formais quando processamos os parâmetros */
+        $$ = $1;
+    }
     ;
 
 parametros_formais:
     TOKEN_ABREPAR declaracao_parametros_lista TOKEN_FECHAPAR
     {
+        /* Abrir escopo quando começamos a processar parâmetros */
+        /* Isso garante que os parâmetros e variáveis locais fiquem no escopo da subrotina */
+        abrir_escopo();
         $$ = $2; /* passar a lista que foi criada */
     }
     ;
@@ -195,9 +278,9 @@ declaracao_parametros_lista:
 declaracao_parametros:
     lista_identificadores TOKEN_DOISP tipo
     {
-        /* mesma lógica de variáveis: processa o tipo e retorna a lista de IDs */
-        processar_declaracao_vars($1, $3); 
-        $$ = $1; 
+        /* processar parâmetros: permite redeclaração entre diferentes subrotinas */
+        processar_declaracao_params($1, $3);
+        $$ = $1;
     }
     ;
 
@@ -231,22 +314,46 @@ atribuicao:
     ID TOKEN_ATRIB expressao
     {
         Simbolo *s = buscar_simbolo($1);
-        if (s == NULL) {
-             printf("ERRO SEMANTICO: Variavel '%s' nao declarada.\n", $1);
-             /* Tratar erro */
+        TreeNode* no_id = novo_no_id($1);
+        TreeNode* no_expr = $3;
+
+        // Verificar se é atribuição de retorno de função
+        // Se o símbolo não está na tabela, pode ser porque ainda não foi inserido (parser bottom-up)
+        // Nesse caso, verificamos se é uma function verificando todas as functions declaradas
+        int eh_function = 0;
+        if (s != NULL && s->categoria == CATEGORIA_FUNCTION) {
+            eh_function = 1;
+        } else if (s == NULL) {
+            // Pode ser uma function que ainda não foi inserida na tabela
+            // Por enquanto, assumimos que se não está na tabela e não é variável, pode ser function
+            // Isso é uma heurística simples - uma solução completa requeriria gerenciamento de escopos
+            eh_function = 0; // Não podemos assumir sem mais contexto
         }
-        // $$ = novo_no_atribuicao(novo_no_id($1), $3);
-        TreeNode* no_id = novo_no_id($1); 
-        TreeNode* no_expr = $3;           
-        
-        if (no_id->tipo_dado != EXP_ERRO && no_expr->tipo_dado != EXP_ERRO) {
-            if (no_id->tipo_dado != no_expr->tipo_dado) {
-                printf("ERRO SEMANTICO (Linha %d): Atribuicao invalida. ", yylineno);
-                printf("Variavel '%s' eh do tipo %s, mas recebeu %s.\n", 
-                        $1, 
-                        (no_id->tipo_dado == EXP_INTEGER ? "INTEGER" : "BOOLEAN"),
-                        (no_expr->tipo_dado == EXP_INTEGER ? "INTEGER" : "BOOLEAN")
-                );
+
+        if (s == NULL && !eh_function) {
+             char buffer[512];
+             snprintf(buffer, sizeof(buffer), "ERRO SEMANTICO (Linha %d): Variavel '%s' nao declarada.\n", yylineno, $1);
+             adicionar_erro_semantico(buffer);
+        } else if (s != NULL && s->categoria == CATEGORIA_FUNCTION) {
+            // Atribuição de retorno de função: permitir sem erro de "não declarada"
+            // Não fazer nada, apenas permitir
+        } else if (s != NULL && s->categoria != CATEGORIA_VARIABLE) {
+            char buffer[512];
+            snprintf(buffer, sizeof(buffer), "ERRO SEMANTICO (Linha %d): Tentativa de atribuir valor a '%s' que nao e uma variavel.\n", yylineno, $1);
+            adicionar_erro_semantico(buffer);
+        }
+
+        // Verificar tipos apenas se não for atribuição de retorno de função
+        if (s != NULL && s->categoria != CATEGORIA_FUNCTION) {
+            if (no_id->tipo_dado != EXP_ERRO && no_expr->tipo_dado != EXP_ERRO) {
+                if (no_id->tipo_dado != no_expr->tipo_dado) {
+                    char buffer[512];
+                    snprintf(buffer, sizeof(buffer), "ERRO SEMANTICO (Linha %d): Atribuicao invalida. Variavel '%s' eh do tipo %s, mas recebeu %s.\n",
+                            yylineno, $1,
+                            (no_id->tipo_dado == EXP_INTEGER ? "INTEGER" : "BOOLEAN"),
+                            (no_expr->tipo_dado == EXP_INTEGER ? "INTEGER" : "BOOLEAN"));
+                    adicionar_erro_semantico(buffer);
+                }
             }
         }
 
@@ -257,9 +364,17 @@ atribuicao:
 chamada_procedimento:
     ID TOKEN_ABREPAR lista_expressoes_opcional TOKEN_FECHAPAR
     {
-        /* verificar se foi declarado */
-        if (buscar_simbolo($1) == NULL) printf("Erro: Procedimento '%s' nao declarado\n", $1);
-        
+        Simbolo* s = buscar_simbolo($1);
+        if (s == NULL) {
+            char buffer[512];
+            snprintf(buffer, sizeof(buffer), "ERRO SEMANTICO (Linha %d): Procedimento '%s' nao declarado.\n", yylineno, $1);
+            adicionar_erro_semantico(buffer);
+        } else if (s->categoria != CATEGORIA_PROCEDURE && s->categoria != CATEGORIA_FUNCTION) {
+            char buffer[512];
+            snprintf(buffer, sizeof(buffer), "ERRO SEMANTICO (Linha %d): '%s' nao e uma procedure ou function.\n", yylineno, $1);
+            adicionar_erro_semantico(buffer);
+        }
+
         /* criar o nó */
         $$ = novo_no_chamada( novo_no_id($1), $3 );
     }
@@ -269,16 +384,19 @@ condicional:
     TOKEN_IF expressao TOKEN_THEN comando
     {
         if ($2->tipo_dado != EXP_BOOLEAN && $2->tipo_dado != EXP_ERRO) {
-             printf("ERRO SEMANTICO (Linha %d): A condicao do 'IF' deve ser booleana.\n", yylineno);
-             printf("Tipagem encontrada: INTEGER.\n"); 
+             char buffer[512];
+             snprintf(buffer, sizeof(buffer), "ERRO SEMANTICO (Linha %d): A condicao do 'IF' deve ser booleana.\n", yylineno);
+             adicionar_erro_semantico(buffer);
         }
-        
+
         $$ = novo_no_condicional($2, $4, NULL);
     }
     | TOKEN_IF expressao TOKEN_THEN comando TOKEN_ELSE comando
     {
         if ($2->tipo_dado != EXP_BOOLEAN && $2->tipo_dado != EXP_ERRO) {
-             printf("ERRO SEMANTICO (Linha %d): A condicao do 'IF' deve ser booleana.\n", yylineno);
+             char buffer[512];
+             snprintf(buffer, sizeof(buffer), "ERRO SEMANTICO (Linha %d): A condicao do 'IF' deve ser booleana.\n", yylineno);
+             adicionar_erro_semantico(buffer);
         }
 
         $$ = novo_no_condicional($2, $4, $6);
@@ -289,7 +407,9 @@ repeticao:
     TOKEN_WHILE expressao TOKEN_DO comando
     {
         if ($2->tipo_dado != EXP_BOOLEAN && $2->tipo_dado != EXP_ERRO) {
-             printf("ERRO SEMANTICO (Linha %d): A condicao do 'WHILE' deve ser booleana.\n", yylineno);
+             char buffer[512];
+             snprintf(buffer, sizeof(buffer), "ERRO SEMANTICO (Linha %d): A condicao do 'WHILE' deve ser booleana.\n", yylineno);
+             adicionar_erro_semantico(buffer);
         }
         $$ = novo_no_while($2, $4);
     }
@@ -298,6 +418,7 @@ repeticao:
 leitura:
     TOKEN_READ TOKEN_ABREPAR lista_identificadores TOKEN_FECHAPAR
     {
+        verificar_lista_identificadores_read($3);
         $$ = novo_no_io(TIPO_LEITURA, $3);
     }
     ;
@@ -305,6 +426,7 @@ leitura:
 escrita:
     TOKEN_WRITE TOKEN_ABREPAR lista_expressoes TOKEN_FECHAPAR
     {
+        verificar_lista_expressoes_write($3);
         $$ = novo_no_io(TIPO_ESCRITA, $3);
     }
     ;
@@ -328,7 +450,7 @@ expressao:
     | expressao_simples relacao expressao_simples
     {
         /* relacao retorna o TOKEN (int) usa novo_no_operacao */
-        $$ = novo_no_operacao($1, $2, $3); 
+        $$ = novo_no_operacao($1, $2, $3);
     }
     ;
 
@@ -345,7 +467,15 @@ expressao_simples:
     termo { $$ = $1; }
     | expressao_simples op_aditivo termo
     {
-        $$ = novo_no_operacao($1, $2, $3);
+        /* Verificar se $1 é NULL (não deveria acontecer, mas pode ocorrer em casos de erro) */
+        if ($1 == NULL) {
+            char buffer[512];
+            snprintf(buffer, sizeof(buffer), "ERRO SEMANTICO (Linha %d): Operando esquerdo invalido na expressao.\n", yylineno);
+            adicionar_erro_semantico(buffer);
+            $$ = $3; /* Retornar apenas o operando direito como fallback */
+        } else {
+            $$ = novo_no_operacao($1, $2, $3);
+        }
     }
     ;
 
@@ -370,29 +500,37 @@ op_multiplicativo:
     ;
 
 fator:
-    ID 
-    { 
-        if(buscar_simbolo($1) == NULL) printf("Erro: '%s' nao declarado\n", $1);
-        $$ = novo_no_id($1); 
+    ID
+    {
+        $$ = novo_no_id($1);
     }
 
     | ID TOKEN_ABREPAR lista_expressoes_opcional TOKEN_FECHAPAR /* chamada funcao */
     {
-        if (buscar_simbolo($1) == NULL) printf("Erro: Func '%s' nao declarada\n", $1);
+        Simbolo* s = buscar_simbolo($1);
+        if (s == NULL) {
+            char buffer[512];
+            snprintf(buffer, sizeof(buffer), "ERRO SEMANTICO (Linha %d): Function '%s' nao declarada.\n", yylineno, $1);
+            adicionar_erro_semantico(buffer);
+        } else if (s->categoria != CATEGORIA_FUNCTION && s->categoria != CATEGORIA_PROCEDURE) {
+            char buffer[512];
+            snprintf(buffer, sizeof(buffer), "ERRO SEMANTICO (Linha %d): '%s' nao e uma function ou procedure.\n", yylineno, $1);
+            adicionar_erro_semantico(buffer);
+        }
         $$ = novo_no_chamada( novo_no_id($1), $3 );
     }
     | NUMERO { $$ = novo_no_num($1); }
 
     | logico
-    
+
     | TOKEN_ABREPAR expressao TOKEN_FECHAPAR { $$ = $2; }
-    
+
     | TOKEN_NOT fator
     {
         /* operação unária: nó de operação com filho esquerda NULL (ou o contrário) */
         $$ = novo_no_operacao(NULL, TOKEN_NOT, $2);
     }
-    
+
     | TOKEN_SUBT fator
     {
         /* menos unário (ex: -5). tratar como operação unária */
@@ -410,8 +548,8 @@ logico:
     TreeNode *savedTree = NULL;
 
     int main(int argc, char **argv) {
-        
-        
+
+
         if (argc < 2) {
             fprintf(stderr, "Erro: Forneça um nome de arquivo.\n");
             fprintf(stderr, "Uso: %s nome_do_arquivo.txt\n", argv[0]);
@@ -423,50 +561,62 @@ logico:
             fprintf(stderr, "Não foi possível abrir o arquivo %s\n", argv[1]);
             return 1;
         }
-        
-        /* apagar daqui até  depois do rewind pra retirar essa léxica anterior. */
-        printf("- Iniciando Fase 1: Análise Léxica -\n");
-        
-        
-        while (yylex() != 0);
-        
-        printf("- Análise Léxica finalizada. Quantidade de erros: %d -\n", contador_erros_lexicos);
 
-        if (contador_erros_lexicos > 0) {
-            printf("\nCompilação abortada devido a erros léxicos.\n");
+        printf("Iniciei a analise lexica\n");
+
+        while (yylex() != 0);
+
+        int num_erros_lexicos = contar_erros_lexicos();
+        printf("Obtive %d erros lexicos e foram:\n", num_erros_lexicos);
+        if (num_erros_lexicos > 0) {
+            exibir_erros_lexicos();
+        }
+        printf("Finalizei a analise lexica\n");
+
+        if (num_erros_lexicos > 0) {
+            limpar_erros_lexicos();
             fclose(yyin);
             return 1; /* Termina o programa com erro */
         }
-        
-        rewind(yyin); 
 
-        
+        rewind(yyin);
+
+
         /* resetar o contador de linhas */
         yylineno = 1;
-        
-        printf("\n--- Iniciando Fase 2: Análise Sintática ---\n");
-        yydebug = 0; 
-        
-        int resultado_parse = yyparse(); 
-    
-        if (resultado_parse == 0) {
-            printf("\n--- Análise Sintática finalizada com sucesso. ---\n");
-        } else {
-            printf("\n--- Análise Sintática falhou. ---\n");
-        }
-    
 
-        // yyparse(); 
-        
+        printf("Iniciei a analise sintatica\n");
+        inicializar_tipos_primitivos();
+        yydebug = 0;
+
+        int resultado_parse = yyparse();
+
+        int num_erros_sintaticos = contar_erros_sintaticos();
+        printf("Obtive %d erros sintaticos e foram:\n", num_erros_sintaticos);
+        if (num_erros_sintaticos > 0) {
+            exibir_erros_sintaticos();
+        }
+        printf("Finalizei a analise sintatica\n");
+
+        printf("Iniciei a analise semantica\n");
+        int num_erros_semanticos = contar_erros_semanticos();
+        printf("Obtive %d erros semanticos e foram:\n", num_erros_semanticos);
+        if (num_erros_semanticos > 0) {
+            exibir_erros_semanticos();
+        }
+        printf("Finalizei a analise semantica\n");
+
+
+        // yyparse();
+
         fclose(yyin);
-        
-        
+
+
         return 0;
     }
 
     void yyerror(const char *s) {
-
-        fprintf(stderr, "\nErro Sintático na linha %d: %s\n", yylineno, s);
-
-        fprintf(stderr, "    Token inesperado: '%s'\n", yytext);
+        char buffer[512];
+        snprintf(buffer, sizeof(buffer), "Erro Sintatico na linha %d: %s. Token inesperado: '%s'\n", yylineno, s, yytext);
+        adicionar_erro_sintatico(buffer);
     }

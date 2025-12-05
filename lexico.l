@@ -1,10 +1,12 @@
 %{
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h> 
+#include <string.h>
 #include "sintatico_novo.tab.h"
+#include "globals.h"
 extern YYSTYPE yylval;
 extern int contador_erros_lexicos;
+void adicionar_erro_lexico(const char *mensagem);
 %}
 
 DIGITO  [0-9]
@@ -38,7 +40,7 @@ ID      {LETRA}({LETRA}|{DIGITO}|_)*
 "-"         { return TOKEN_SUBT; }
 "*"         { return TOKEN_MULT; }
 "="         { return TOKEN_IGUAL; }
-")"         { return TOKEN_FECHAPAR; } 
+")"         { return TOKEN_FECHAPAR; }
 "("         { return TOKEN_ABREPAR; }
 ";"         { return TOKEN_PONTOVIRG; }
 ","         { return TOKEN_VIRG; }
@@ -51,26 +53,35 @@ ID      {LETRA}({LETRA}|{DIGITO}|_)*
 ":="        { return TOKEN_ATRIB; }
 ":"         { return TOKEN_DOISP; }
 
-{NUMERO}+{ID}  {printf("Erro léxico: numero NO identificador => %s \n", yytext); /*exit(1);*/}
-[0-9]+\.+(\.|{DIGITO}|{ID})*    {printf("Numero nao aceito : %s \n", yytext); /*exit(1);*/}
-
-
-{ID}        { 
-    yylval.sval = strdup(yytext); 
-    return ID; 
+{NUMERO}+{ID}  {
+    char buffer[256];
+    snprintf(buffer, sizeof(buffer), "Erro lexico: numero NO identificador => %s\n", yytext);
+    adicionar_erro_lexico(buffer);
+}
+[0-9]+\.+(\.|{DIGITO}|{ID})*    {
+    char buffer[256];
+    snprintf(buffer, sizeof(buffer), "Numero nao aceito: %s\n", yytext);
+    adicionar_erro_lexico(buffer);
 }
 
-{NUMERO}    { 
-    yylval.sval = strdup(yytext); 
-    return NUMERO; 
+
+{ID}        {
+    yylval.sval = strdup(yytext);
+    return ID;
+}
+
+{NUMERO}    {
+    yylval.sval = strdup(yytext);
+    return NUMERO;
 }
 
 [ \r\t]+ ;
 \n  { yylineno++; }
 
 .   {
-    printf("Erro léxico: Simbolo Invalido => %s na linha %i\n", yytext, yylineno); /*exit(1);*/
-    contador_erros_lexicos++;    
+    char buffer[256];
+    snprintf(buffer, sizeof(buffer), "Erro lexico: Simbolo Invalido => %s na linha %i\n", yytext, yylineno);
+    adicionar_erro_lexico(buffer);
 }
 
 %%

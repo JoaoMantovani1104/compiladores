@@ -13,7 +13,7 @@ LEX_FILE = lexico.l
 # --- !!! ATENÇÃO AQUI !!! ---
 # Liste aqui os seus arquivos .c extras separados por espaço.
 # Exemplo: HELPER_SOURCES = arvore.c tabela.c util.c
-HELPER_SOURCES = arvore.c symbol_table.c 
+HELPER_SOURCES = arvore.c symbol_table.c erros.c
 
 # O nome que você quer para o seu programa final
 EXECUTABLE = compilador
@@ -27,7 +27,7 @@ BISON_FLAGS = -d -v
 # Flags do Flex
 FLEX_FLAGS =
 
-# Flags do GCC 
+# Flags do GCC
 # -g: Debug (para usar gdb ou valgrind)
 # -Wall: Mostra todos os avisos (importante!)
 # -I.: Procura arquivos .h no diretório atual

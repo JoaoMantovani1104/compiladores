@@ -1,7 +1,7 @@
-State 121 conflicts: 1 shift/reduce
+Estado 122 conflitos: 1 de deslocamento/redução
 
 
-Grammar
+Gramática
 
     0 $accept: programa $end
 
@@ -40,1557 +40,1571 @@ Grammar
 
    21 declaracao_procedimento: TOKEN_PROCEDURE ID parametros_formais_opcional TOKEN_PONTOVIRG bloco_subrot
 
-   22 declaracao_funcao: TOKEN_FUNCTION ID parametros_formais_opcional TOKEN_DOISP tipo TOKEN_PONTOVIRG bloco_subrot
+   22 declaracao_funcao: declaracao_funcao_cabecalho parametros_formais_opcional TOKEN_DOISP tipo TOKEN_PONTOVIRG bloco_subrot
 
-   23 parametros_formais_opcional: ε
-   24                            | parametros_formais
+   23 declaracao_funcao_cabecalho: TOKEN_FUNCTION ID
 
-   25 parametros_formais: TOKEN_ABREPAR declaracao_parametros_lista TOKEN_FECHAPAR
+   24 parametros_formais_opcional: ε
+   25                            | parametros_formais
 
-   26 declaracao_parametros_lista: declaracao_parametros
-   27                            | declaracao_parametros_lista TOKEN_PONTOVIRG declaracao_parametros
+   26 parametros_formais: TOKEN_ABREPAR declaracao_parametros_lista TOKEN_FECHAPAR
 
-   28 declaracao_parametros: lista_identificadores TOKEN_DOISP tipo
+   27 declaracao_parametros_lista: declaracao_parametros
+   28                            | declaracao_parametros_lista TOKEN_PONTOVIRG declaracao_parametros
 
-   29 comando_composto: TOKEN_BEGIN comando_lista TOKEN_END
+   29 declaracao_parametros: lista_identificadores TOKEN_DOISP tipo
 
-   30 comando_lista: comando
-   31              | comando_lista TOKEN_PONTOVIRG comando
+   30 comando_composto: TOKEN_BEGIN comando_lista TOKEN_END
 
-   32 comando: atribuicao
-   33        | chamada_procedimento
-   34        | condicional
-   35        | repeticao
-   36        | leitura
-   37        | escrita
-   38        | comando_composto
+   31 comando_lista: comando
+   32              | comando_lista TOKEN_PONTOVIRG comando
 
-   39 atribuicao: ID TOKEN_ATRIB expressao
+   33 comando: atribuicao
+   34        | chamada_procedimento
+   35        | condicional
+   36        | repeticao
+   37        | leitura
+   38        | escrita
+   39        | comando_composto
 
-   40 chamada_procedimento: ID TOKEN_ABREPAR lista_expressoes_opcional TOKEN_FECHAPAR
+   40 atribuicao: ID TOKEN_ATRIB expressao
 
-   41 condicional: TOKEN_IF expressao TOKEN_THEN comando
-   42            | TOKEN_IF expressao TOKEN_THEN comando TOKEN_ELSE comando
+   41 chamada_procedimento: ID TOKEN_ABREPAR lista_expressoes_opcional TOKEN_FECHAPAR
 
-   43 repeticao: TOKEN_WHILE expressao TOKEN_DO comando
+   42 condicional: TOKEN_IF expressao TOKEN_THEN comando
+   43            | TOKEN_IF expressao TOKEN_THEN comando TOKEN_ELSE comando
 
-   44 leitura: TOKEN_READ TOKEN_ABREPAR lista_identificadores TOKEN_FECHAPAR
+   44 repeticao: TOKEN_WHILE expressao TOKEN_DO comando
 
-   45 escrita: TOKEN_WRITE TOKEN_ABREPAR lista_expressoes TOKEN_FECHAPAR
+   45 leitura: TOKEN_READ TOKEN_ABREPAR lista_identificadores TOKEN_FECHAPAR
 
-   46 lista_expressoes: expressao
-   47                 | lista_expressoes TOKEN_VIRG expressao
+   46 escrita: TOKEN_WRITE TOKEN_ABREPAR lista_expressoes TOKEN_FECHAPAR
 
-   48 lista_expressoes_opcional: ε
-   49                          | lista_expressoes
+   47 lista_expressoes: expressao
+   48                 | lista_expressoes TOKEN_VIRG expressao
 
-   50 expressao: expressao_simples
-   51          | expressao_simples relacao expressao_simples
+   49 lista_expressoes_opcional: ε
+   50                          | lista_expressoes
 
-   52 relacao: TOKEN_IGUAL
-   53        | TOKEN_DIF
-   54        | TOKEN_MENOR
-   55        | TOKEN_MENORIGUAL
-   56        | TOKEN_MAIOR
-   57        | TOKEN_MAIORIGUAL
+   51 expressao: expressao_simples
+   52          | expressao_simples relacao expressao_simples
 
-   58 expressao_simples: termo
-   59                  | expressao_simples op_aditivo termo
+   53 relacao: TOKEN_IGUAL
+   54        | TOKEN_DIF
+   55        | TOKEN_MENOR
+   56        | TOKEN_MENORIGUAL
+   57        | TOKEN_MAIOR
+   58        | TOKEN_MAIORIGUAL
 
-   60 op_aditivo: TOKEN_SOMA
-   61           | TOKEN_SUBT
-   62           | TOKEN_OR
+   59 expressao_simples: termo
+   60                  | expressao_simples op_aditivo termo
 
-   63 termo: fator
-   64      | termo op_multiplicativo fator
+   61 op_aditivo: TOKEN_SOMA
+   62           | TOKEN_SUBT
+   63           | TOKEN_OR
 
-   65 op_multiplicativo: TOKEN_MULT
-   66                  | TOKEN_DIV
-   67                  | TOKEN_AND
+   64 termo: fator
+   65      | termo op_multiplicativo fator
 
-   68 fator: ID
-   69      | ID TOKEN_ABREPAR lista_expressoes_opcional TOKEN_FECHAPAR
-   70      | NUMERO
-   71      | logico
-   72      | TOKEN_ABREPAR expressao TOKEN_FECHAPAR
-   73      | TOKEN_NOT fator
-   74      | TOKEN_SUBT fator
+   66 op_multiplicativo: TOKEN_MULT
+   67                  | TOKEN_DIV
+   68                  | TOKEN_AND
 
-   75 logico: TOKEN_FALSE
-   76       | TOKEN_TRUE
+   69 fator: ID
+   70      | ID TOKEN_ABREPAR lista_expressoes_opcional TOKEN_FECHAPAR
+   71      | NUMERO
+   72      | logico
+   73      | TOKEN_ABREPAR expressao TOKEN_FECHAPAR
+   74      | TOKEN_NOT fator
+   75      | TOKEN_SUBT fator
+
+   76 logico: TOKEN_FALSE
+   77       | TOKEN_TRUE
 
 
-Terminals, with rules where they appear
+Terminais, com as regras onde eles aparecem
 
     $end (0) 0
     error (256)
     TOKEN_PROGRAM (258) 1
     TOKEN_VAR (259) 8
     TOKEN_PROCEDURE (260) 21
-    TOKEN_FUNCTION (261) 22
-    TOKEN_BEGIN (262) 29
-    TOKEN_END (263) 29
-    TOKEN_FALSE (264) 75
-    TOKEN_TRUE (265) 76
-    TOKEN_IF (266) 41 42
-    TOKEN_THEN (267) 41 42
-    TOKEN_ELSE (268) 42
-    TOKEN_WHILE (269) 43
-    TOKEN_DO (270) 43
-    TOKEN_READ (271) 44
-    TOKEN_WRITE (272) 45
-    TOKEN_AND (273) 67
-    TOKEN_OR (274) 62
-    TOKEN_NOT (275) 73
-    TOKEN_DIV (276) 66
+    TOKEN_FUNCTION (261) 23
+    TOKEN_BEGIN (262) 30
+    TOKEN_END (263) 30
+    TOKEN_FALSE (264) 76
+    TOKEN_TRUE (265) 77
+    TOKEN_IF (266) 42 43
+    TOKEN_THEN (267) 42 43
+    TOKEN_ELSE (268) 43
+    TOKEN_WHILE (269) 44
+    TOKEN_DO (270) 44
+    TOKEN_READ (271) 45
+    TOKEN_WRITE (272) 46
+    TOKEN_AND (273) 68
+    TOKEN_OR (274) 63
+    TOKEN_NOT (275) 74
+    TOKEN_DIV (276) 67
     TOKEN_INTEGER (277) 16
     TOKEN_BOOLEAN (278) 15
-    TOKEN_SOMA (279) 60
-    TOKEN_SUBT (280) 61 74
-    TOKEN_MULT (281) 65
-    TOKEN_IGUAL (282) 52
-    TOKEN_FECHAPAR (283) 25 40 44 45 69 72
-    TOKEN_ABREPAR (284) 25 40 44 45 69 72
-    TOKEN_PONTOVIRG (285) 1 8 10 17 18 21 22 27 31
-    TOKEN_VIRG (286) 14 47
+    TOKEN_SOMA (279) 61
+    TOKEN_SUBT (280) 62 75
+    TOKEN_MULT (281) 66
+    TOKEN_IGUAL (282) 53
+    TOKEN_FECHAPAR (283) 26 41 45 46 70 73
+    TOKEN_ABREPAR (284) 26 41 45 46 70 73
+    TOKEN_PONTOVIRG (285) 1 8 10 17 18 21 22 28 32
+    TOKEN_VIRG (286) 14 48
     TOKEN_PONTO (287) 1
-    TOKEN_DIF (288) 53
-    TOKEN_MAIOR (289) 56
-    TOKEN_MENOR (290) 54
-    TOKEN_MAIORIGUAL (291) 57
-    TOKEN_MENORIGUAL (292) 55
-    TOKEN_ATRIB (293) 39
-    TOKEN_DOISP (294) 11 22 28
-    ID <sval> (295) 1 12 14 21 22 39 40 68 69
-    NUMERO <sval> (296) 70
+    TOKEN_DIF (288) 54
+    TOKEN_MAIOR (289) 57
+    TOKEN_MENOR (290) 55
+    TOKEN_MAIORIGUAL (291) 58
+    TOKEN_MENORIGUAL (292) 56
+    TOKEN_ATRIB (293) 40
+    TOKEN_DOISP (294) 11 22 29
+    ID <sval> (295) 1 12 14 21 23 40 41 69 70
+    NUMERO <sval> (296) 71
 
 
-Nonterminals, with rules where they appear
+Não terminais com as regras onde eles aparecem
 
     $accept (42)
-        on left: 0
+        à esquerda: 0
     programa <no_ast> (43)
-        on left: 1
-        on right: 0
+        à esquerda: 1
+        à direita: 0
     bloco <no_ast> (44)
-        on left: 2
-        on right: 1
+        à esquerda: 2
+        à direita: 1
     bloco_subrot <no_ast> (45)
-        on left: 3
-        on right: 21 22
+        à esquerda: 3
+        à direita: 21 22
     secao_declaracao_variaveis_opcional <no_ast> (46)
-        on left: 4 5
-        on right: 2 3
+        à esquerda: 4 5
+        à direita: 2 3
     secao_declaracao_subrotinas_opcional <no_ast> (47)
-        on left: 6 7
-        on right: 2
+        à esquerda: 6 7
+        à direita: 2
     secao_declaracao_variaveis <no_ast> (48)
-        on left: 8
-        on right: 5
+        à esquerda: 8
+        à direita: 5
     lista_declaracao_variaveis_opcional <no_ast> (49)
-        on left: 9 10
-        on right: 8 10
+        à esquerda: 9 10
+        à direita: 8 10
     declaracao_variaveis <no_ast> (50)
-        on left: 11
-        on right: 8 10
+        à esquerda: 11
+        à direita: 8 10
     lista_identificadores <no_ast> (51)
-        on left: 12
-        on right: 11 28 44
+        à esquerda: 12
+        à direita: 11 29 45
     lista_identificadores_resto_opcional <no_ast> (52)
-        on left: 13 14
-        on right: 12 14
+        à esquerda: 13 14
+        à direita: 12 14
     tipo <sval> (53)
-        on left: 15 16
-        on right: 11 22 28
+        à esquerda: 15 16
+        à direita: 11 22 29
     secao_declaracao_subrotinas <no_ast> (54)
-        on left: 17 18
-        on right: 7 18
+        à esquerda: 17 18
+        à direita: 7 18
     declaracao_subrotina <no_ast> (55)
-        on left: 19 20
-        on right: 17 18
+        à esquerda: 19 20
+        à direita: 17 18
     declaracao_procedimento <no_ast> (56)
-        on left: 21
-        on right: 19
+        à esquerda: 21
+        à direita: 19
     declaracao_funcao <no_ast> (57)
-        on left: 22
-        on right: 20
-    parametros_formais_opcional <no_ast> (58)
-        on left: 23 24
-        on right: 21 22
-    parametros_formais <no_ast> (59)
-        on left: 25
-        on right: 24
-    declaracao_parametros_lista <no_ast> (60)
-        on left: 26 27
-        on right: 25 27
-    declaracao_parametros <no_ast> (61)
-        on left: 28
-        on right: 26 27
-    comando_composto <no_ast> (62)
-        on left: 29
-        on right: 2 3 38
-    comando_lista <no_ast> (63)
-        on left: 30 31
-        on right: 29 31
-    comando <no_ast> (64)
-        on left: 32 33 34 35 36 37 38
-        on right: 30 31 41 42 43
-    atribuicao <no_ast> (65)
-        on left: 39
-        on right: 32
-    chamada_procedimento <no_ast> (66)
-        on left: 40
-        on right: 33
-    condicional <no_ast> (67)
-        on left: 41 42
-        on right: 34
-    repeticao <no_ast> (68)
-        on left: 43
-        on right: 35
-    leitura <no_ast> (69)
-        on left: 44
-        on right: 36
-    escrita <no_ast> (70)
-        on left: 45
-        on right: 37
-    lista_expressoes <no_ast> (71)
-        on left: 46 47
-        on right: 45 47 49
-    lista_expressoes_opcional <no_ast> (72)
-        on left: 48 49
-        on right: 40 69
-    expressao <no_ast> (73)
-        on left: 50 51
-        on right: 39 41 42 43 46 47 72
-    relacao <ival> (74)
-        on left: 52 53 54 55 56 57
-        on right: 51
-    expressao_simples <no_ast> (75)
-        on left: 58 59
-        on right: 50 51 59
-    op_aditivo <ival> (76)
-        on left: 60 61 62
-        on right: 59
-    termo <no_ast> (77)
-        on left: 63 64
-        on right: 58 59 64
-    op_multiplicativo <ival> (78)
-        on left: 65 66 67
-        on right: 64
-    fator <no_ast> (79)
-        on left: 68 69 70 71 72 73 74
-        on right: 63 64 73 74
-    logico <no_ast> (80)
-        on left: 75 76
-        on right: 71
+        à esquerda: 22
+        à direita: 20
+    declaracao_funcao_cabecalho <sval> (58)
+        à esquerda: 23
+        à direita: 22
+    parametros_formais_opcional <no_ast> (59)
+        à esquerda: 24 25
+        à direita: 21 22
+    parametros_formais <no_ast> (60)
+        à esquerda: 26
+        à direita: 25
+    declaracao_parametros_lista <no_ast> (61)
+        à esquerda: 27 28
+        à direita: 26 28
+    declaracao_parametros <no_ast> (62)
+        à esquerda: 29
+        à direita: 27 28
+    comando_composto <no_ast> (63)
+        à esquerda: 30
+        à direita: 2 3 39
+    comando_lista <no_ast> (64)
+        à esquerda: 31 32
+        à direita: 30 32
+    comando <no_ast> (65)
+        à esquerda: 33 34 35 36 37 38 39
+        à direita: 31 32 42 43 44
+    atribuicao <no_ast> (66)
+        à esquerda: 40
+        à direita: 33
+    chamada_procedimento <no_ast> (67)
+        à esquerda: 41
+        à direita: 34
+    condicional <no_ast> (68)
+        à esquerda: 42 43
+        à direita: 35
+    repeticao <no_ast> (69)
+        à esquerda: 44
+        à direita: 36
+    leitura <no_ast> (70)
+        à esquerda: 45
+        à direita: 37
+    escrita <no_ast> (71)
+        à esquerda: 46
+        à direita: 38
+    lista_expressoes <no_ast> (72)
+        à esquerda: 47 48
+        à direita: 46 48 50
+    lista_expressoes_opcional <no_ast> (73)
+        à esquerda: 49 50
+        à direita: 41 70
+    expressao <no_ast> (74)
+        à esquerda: 51 52
+        à direita: 40 42 43 44 47 48 73
+    relacao <ival> (75)
+        à esquerda: 53 54 55 56 57 58
+        à direita: 52
+    expressao_simples <no_ast> (76)
+        à esquerda: 59 60
+        à direita: 51 52 60
+    op_aditivo <ival> (77)
+        à esquerda: 61 62 63
+        à direita: 60
+    termo <no_ast> (78)
+        à esquerda: 64 65
+        à direita: 59 60 65
+    op_multiplicativo <ival> (79)
+        à esquerda: 66 67 68
+        à direita: 65
+    fator <no_ast> (80)
+        à esquerda: 69 70 71 72 73 74 75
+        à direita: 64 65 74 75
+    logico <no_ast> (81)
+        à esquerda: 76 77
+        à direita: 72
 
 
-State 0
+Estado 0
 
     0 $accept: • programa $end
 
-    TOKEN_PROGRAM  shift, and go to state 1
+    TOKEN_PROGRAM  deslocar, e ir ao estado 1
 
-    programa  go to state 2
+    programa  ir ao estado 2
 
 
-State 1
+Estado 1
 
     1 programa: TOKEN_PROGRAM • ID TOKEN_PONTOVIRG bloco TOKEN_PONTO
 
-    ID  shift, and go to state 3
+    ID  deslocar, e ir ao estado 3
 
 
-State 2
+Estado 2
 
     0 $accept: programa • $end
 
-    $end  shift, and go to state 4
+    $end  deslocar, e ir ao estado 4
 
 
-State 3
+Estado 3
 
     1 programa: TOKEN_PROGRAM ID • TOKEN_PONTOVIRG bloco TOKEN_PONTO
 
-    TOKEN_PONTOVIRG  shift, and go to state 5
+    TOKEN_PONTOVIRG  deslocar, e ir ao estado 5
 
 
-State 4
+Estado 4
 
     0 $accept: programa $end •
 
-    $default  accept
+    $padrão  aceitar
 
 
-State 5
+Estado 5
 
     1 programa: TOKEN_PROGRAM ID TOKEN_PONTOVIRG • bloco TOKEN_PONTO
 
-    TOKEN_VAR  shift, and go to state 6
+    TOKEN_VAR  deslocar, e ir ao estado 6
 
-    $default  reduce using rule 4 (secao_declaracao_variaveis_opcional)
+    $padrão  reduzir usando a regra 4 (secao_declaracao_variaveis_opcional)
 
-    bloco                                go to state 7
-    secao_declaracao_variaveis_opcional  go to state 8
-    secao_declaracao_variaveis           go to state 9
+    bloco                                ir ao estado 7
+    secao_declaracao_variaveis_opcional  ir ao estado 8
+    secao_declaracao_variaveis           ir ao estado 9
 
 
-State 6
+Estado 6
 
     8 secao_declaracao_variaveis: TOKEN_VAR • declaracao_variaveis TOKEN_PONTOVIRG lista_declaracao_variaveis_opcional
 
-    ID  shift, and go to state 10
+    ID  deslocar, e ir ao estado 10
 
-    declaracao_variaveis   go to state 11
-    lista_identificadores  go to state 12
+    declaracao_variaveis   ir ao estado 11
+    lista_identificadores  ir ao estado 12
 
 
-State 7
+Estado 7
 
     1 programa: TOKEN_PROGRAM ID TOKEN_PONTOVIRG bloco • TOKEN_PONTO
 
-    TOKEN_PONTO  shift, and go to state 13
+    TOKEN_PONTO  deslocar, e ir ao estado 13
 
 
-State 8
+Estado 8
 
     2 bloco: secao_declaracao_variaveis_opcional • secao_declaracao_subrotinas_opcional comando_composto
 
-    TOKEN_PROCEDURE  shift, and go to state 14
-    TOKEN_FUNCTION   shift, and go to state 15
+    TOKEN_PROCEDURE  deslocar, e ir ao estado 14
+    TOKEN_FUNCTION   deslocar, e ir ao estado 15
 
-    $default  reduce using rule 6 (secao_declaracao_subrotinas_opcional)
+    $padrão  reduzir usando a regra 6 (secao_declaracao_subrotinas_opcional)
 
-    secao_declaracao_subrotinas_opcional  go to state 16
-    secao_declaracao_subrotinas           go to state 17
-    declaracao_subrotina                  go to state 18
-    declaracao_procedimento               go to state 19
-    declaracao_funcao                     go to state 20
+    secao_declaracao_subrotinas_opcional  ir ao estado 16
+    secao_declaracao_subrotinas           ir ao estado 17
+    declaracao_subrotina                  ir ao estado 18
+    declaracao_procedimento               ir ao estado 19
+    declaracao_funcao                     ir ao estado 20
+    declaracao_funcao_cabecalho           ir ao estado 21
 
 
-State 9
+Estado 9
 
     5 secao_declaracao_variaveis_opcional: secao_declaracao_variaveis •
 
-    $default  reduce using rule 5 (secao_declaracao_variaveis_opcional)
+    $padrão  reduzir usando a regra 5 (secao_declaracao_variaveis_opcional)
 
 
-State 10
+Estado 10
 
    12 lista_identificadores: ID • lista_identificadores_resto_opcional
 
-    $default  reduce using rule 13 (lista_identificadores_resto_opcional)
+    $padrão  reduzir usando a regra 13 (lista_identificadores_resto_opcional)
 
-    lista_identificadores_resto_opcional  go to state 21
+    lista_identificadores_resto_opcional  ir ao estado 22
 
 
-State 11
+Estado 11
 
     8 secao_declaracao_variaveis: TOKEN_VAR declaracao_variaveis • TOKEN_PONTOVIRG lista_declaracao_variaveis_opcional
 
-    TOKEN_PONTOVIRG  shift, and go to state 22
+    TOKEN_PONTOVIRG  deslocar, e ir ao estado 23
 
 
-State 12
+Estado 12
 
    11 declaracao_variaveis: lista_identificadores • TOKEN_DOISP tipo
 
-    TOKEN_DOISP  shift, and go to state 23
+    TOKEN_DOISP  deslocar, e ir ao estado 24
 
 
-State 13
+Estado 13
 
     1 programa: TOKEN_PROGRAM ID TOKEN_PONTOVIRG bloco TOKEN_PONTO •
 
-    $default  reduce using rule 1 (programa)
+    $padrão  reduzir usando a regra 1 (programa)
 
 
-State 14
+Estado 14
 
    21 declaracao_procedimento: TOKEN_PROCEDURE • ID parametros_formais_opcional TOKEN_PONTOVIRG bloco_subrot
 
-    ID  shift, and go to state 24
+    ID  deslocar, e ir ao estado 25
 
 
-State 15
+Estado 15
 
-   22 declaracao_funcao: TOKEN_FUNCTION • ID parametros_formais_opcional TOKEN_DOISP tipo TOKEN_PONTOVIRG bloco_subrot
+   23 declaracao_funcao_cabecalho: TOKEN_FUNCTION • ID
 
-    ID  shift, and go to state 25
+    ID  deslocar, e ir ao estado 26
 
 
-State 16
+Estado 16
 
     2 bloco: secao_declaracao_variaveis_opcional secao_declaracao_subrotinas_opcional • comando_composto
 
-    TOKEN_BEGIN  shift, and go to state 26
+    TOKEN_BEGIN  deslocar, e ir ao estado 27
 
-    comando_composto  go to state 27
+    comando_composto  ir ao estado 28
 
 
-State 17
+Estado 17
 
     7 secao_declaracao_subrotinas_opcional: secao_declaracao_subrotinas •
    18 secao_declaracao_subrotinas: secao_declaracao_subrotinas • declaracao_subrotina TOKEN_PONTOVIRG
 
-    TOKEN_PROCEDURE  shift, and go to state 14
-    TOKEN_FUNCTION   shift, and go to state 15
+    TOKEN_PROCEDURE  deslocar, e ir ao estado 14
+    TOKEN_FUNCTION   deslocar, e ir ao estado 15
 
-    $default  reduce using rule 7 (secao_declaracao_subrotinas_opcional)
+    $padrão  reduzir usando a regra 7 (secao_declaracao_subrotinas_opcional)
 
-    declaracao_subrotina     go to state 28
-    declaracao_procedimento  go to state 19
-    declaracao_funcao        go to state 20
+    declaracao_subrotina         ir ao estado 29
+    declaracao_procedimento      ir ao estado 19
+    declaracao_funcao            ir ao estado 20
+    declaracao_funcao_cabecalho  ir ao estado 21
 
 
-State 18
+Estado 18
 
    17 secao_declaracao_subrotinas: declaracao_subrotina • TOKEN_PONTOVIRG
 
-    TOKEN_PONTOVIRG  shift, and go to state 29
+    TOKEN_PONTOVIRG  deslocar, e ir ao estado 30
 
 
-State 19
+Estado 19
 
    19 declaracao_subrotina: declaracao_procedimento •
 
-    $default  reduce using rule 19 (declaracao_subrotina)
+    $padrão  reduzir usando a regra 19 (declaracao_subrotina)
 
 
-State 20
+Estado 20
 
    20 declaracao_subrotina: declaracao_funcao •
 
-    $default  reduce using rule 20 (declaracao_subrotina)
+    $padrão  reduzir usando a regra 20 (declaracao_subrotina)
 
 
-State 21
+Estado 21
+
+   22 declaracao_funcao: declaracao_funcao_cabecalho • parametros_formais_opcional TOKEN_DOISP tipo TOKEN_PONTOVIRG bloco_subrot
+
+    TOKEN_ABREPAR  deslocar, e ir ao estado 31
+
+    $padrão  reduzir usando a regra 24 (parametros_formais_opcional)
+
+    parametros_formais_opcional  ir ao estado 32
+    parametros_formais           ir ao estado 33
+
+
+Estado 22
 
    12 lista_identificadores: ID lista_identificadores_resto_opcional •
    14 lista_identificadores_resto_opcional: lista_identificadores_resto_opcional • TOKEN_VIRG ID
 
-    TOKEN_VIRG  shift, and go to state 30
+    TOKEN_VIRG  deslocar, e ir ao estado 34
 
-    $default  reduce using rule 12 (lista_identificadores)
+    $padrão  reduzir usando a regra 12 (lista_identificadores)
 
 
-State 22
+Estado 23
 
     8 secao_declaracao_variaveis: TOKEN_VAR declaracao_variaveis TOKEN_PONTOVIRG • lista_declaracao_variaveis_opcional
 
-    $default  reduce using rule 9 (lista_declaracao_variaveis_opcional)
+    $padrão  reduzir usando a regra 9 (lista_declaracao_variaveis_opcional)
 
-    lista_declaracao_variaveis_opcional  go to state 31
+    lista_declaracao_variaveis_opcional  ir ao estado 35
 
 
-State 23
+Estado 24
 
    11 declaracao_variaveis: lista_identificadores TOKEN_DOISP • tipo
 
-    TOKEN_INTEGER  shift, and go to state 32
-    TOKEN_BOOLEAN  shift, and go to state 33
+    TOKEN_INTEGER  deslocar, e ir ao estado 36
+    TOKEN_BOOLEAN  deslocar, e ir ao estado 37
 
-    tipo  go to state 34
+    tipo  ir ao estado 38
 
 
-State 24
+Estado 25
 
    21 declaracao_procedimento: TOKEN_PROCEDURE ID • parametros_formais_opcional TOKEN_PONTOVIRG bloco_subrot
 
-    TOKEN_ABREPAR  shift, and go to state 35
+    TOKEN_ABREPAR  deslocar, e ir ao estado 31
 
-    $default  reduce using rule 23 (parametros_formais_opcional)
+    $padrão  reduzir usando a regra 24 (parametros_formais_opcional)
 
-    parametros_formais_opcional  go to state 36
-    parametros_formais           go to state 37
-
-
-State 25
-
-   22 declaracao_funcao: TOKEN_FUNCTION ID • parametros_formais_opcional TOKEN_DOISP tipo TOKEN_PONTOVIRG bloco_subrot
-
-    TOKEN_ABREPAR  shift, and go to state 35
-
-    $default  reduce using rule 23 (parametros_formais_opcional)
-
-    parametros_formais_opcional  go to state 38
-    parametros_formais           go to state 37
+    parametros_formais_opcional  ir ao estado 39
+    parametros_formais           ir ao estado 33
 
 
-State 26
+Estado 26
 
-   29 comando_composto: TOKEN_BEGIN • comando_lista TOKEN_END
+   23 declaracao_funcao_cabecalho: TOKEN_FUNCTION ID •
 
-    TOKEN_BEGIN  shift, and go to state 26
-    TOKEN_IF     shift, and go to state 39
-    TOKEN_WHILE  shift, and go to state 40
-    TOKEN_READ   shift, and go to state 41
-    TOKEN_WRITE  shift, and go to state 42
-    ID           shift, and go to state 43
-
-    comando_composto      go to state 44
-    comando_lista         go to state 45
-    comando               go to state 46
-    atribuicao            go to state 47
-    chamada_procedimento  go to state 48
-    condicional           go to state 49
-    repeticao             go to state 50
-    leitura               go to state 51
-    escrita               go to state 52
+    $padrão  reduzir usando a regra 23 (declaracao_funcao_cabecalho)
 
 
-State 27
+Estado 27
+
+   30 comando_composto: TOKEN_BEGIN • comando_lista TOKEN_END
+
+    TOKEN_BEGIN  deslocar, e ir ao estado 27
+    TOKEN_IF     deslocar, e ir ao estado 40
+    TOKEN_WHILE  deslocar, e ir ao estado 41
+    TOKEN_READ   deslocar, e ir ao estado 42
+    TOKEN_WRITE  deslocar, e ir ao estado 43
+    ID           deslocar, e ir ao estado 44
+
+    comando_composto      ir ao estado 45
+    comando_lista         ir ao estado 46
+    comando               ir ao estado 47
+    atribuicao            ir ao estado 48
+    chamada_procedimento  ir ao estado 49
+    condicional           ir ao estado 50
+    repeticao             ir ao estado 51
+    leitura               ir ao estado 52
+    escrita               ir ao estado 53
+
+
+Estado 28
 
     2 bloco: secao_declaracao_variaveis_opcional secao_declaracao_subrotinas_opcional comando_composto •
 
-    $default  reduce using rule 2 (bloco)
+    $padrão  reduzir usando a regra 2 (bloco)
 
 
-State 28
+Estado 29
 
    18 secao_declaracao_subrotinas: secao_declaracao_subrotinas declaracao_subrotina • TOKEN_PONTOVIRG
 
-    TOKEN_PONTOVIRG  shift, and go to state 53
+    TOKEN_PONTOVIRG  deslocar, e ir ao estado 54
 
 
-State 29
+Estado 30
 
    17 secao_declaracao_subrotinas: declaracao_subrotina TOKEN_PONTOVIRG •
 
-    $default  reduce using rule 17 (secao_declaracao_subrotinas)
+    $padrão  reduzir usando a regra 17 (secao_declaracao_subrotinas)
 
 
-State 30
+Estado 31
+
+   26 parametros_formais: TOKEN_ABREPAR • declaracao_parametros_lista TOKEN_FECHAPAR
+
+    ID  deslocar, e ir ao estado 10
+
+    lista_identificadores        ir ao estado 55
+    declaracao_parametros_lista  ir ao estado 56
+    declaracao_parametros        ir ao estado 57
+
+
+Estado 32
+
+   22 declaracao_funcao: declaracao_funcao_cabecalho parametros_formais_opcional • TOKEN_DOISP tipo TOKEN_PONTOVIRG bloco_subrot
+
+    TOKEN_DOISP  deslocar, e ir ao estado 58
+
+
+Estado 33
+
+   25 parametros_formais_opcional: parametros_formais •
+
+    $padrão  reduzir usando a regra 25 (parametros_formais_opcional)
+
+
+Estado 34
 
    14 lista_identificadores_resto_opcional: lista_identificadores_resto_opcional TOKEN_VIRG • ID
 
-    ID  shift, and go to state 54
+    ID  deslocar, e ir ao estado 59
 
 
-State 31
+Estado 35
 
     8 secao_declaracao_variaveis: TOKEN_VAR declaracao_variaveis TOKEN_PONTOVIRG lista_declaracao_variaveis_opcional •
    10 lista_declaracao_variaveis_opcional: lista_declaracao_variaveis_opcional • declaracao_variaveis TOKEN_PONTOVIRG
 
-    ID  shift, and go to state 10
+    ID  deslocar, e ir ao estado 10
 
-    $default  reduce using rule 8 (secao_declaracao_variaveis)
+    $padrão  reduzir usando a regra 8 (secao_declaracao_variaveis)
 
-    declaracao_variaveis   go to state 55
-    lista_identificadores  go to state 12
+    declaracao_variaveis   ir ao estado 60
+    lista_identificadores  ir ao estado 12
 
 
-State 32
+Estado 36
 
    16 tipo: TOKEN_INTEGER •
 
-    $default  reduce using rule 16 (tipo)
+    $padrão  reduzir usando a regra 16 (tipo)
 
 
-State 33
+Estado 37
 
    15 tipo: TOKEN_BOOLEAN •
 
-    $default  reduce using rule 15 (tipo)
+    $padrão  reduzir usando a regra 15 (tipo)
 
 
-State 34
+Estado 38
 
    11 declaracao_variaveis: lista_identificadores TOKEN_DOISP tipo •
 
-    $default  reduce using rule 11 (declaracao_variaveis)
+    $padrão  reduzir usando a regra 11 (declaracao_variaveis)
 
 
-State 35
-
-   25 parametros_formais: TOKEN_ABREPAR • declaracao_parametros_lista TOKEN_FECHAPAR
-
-    ID  shift, and go to state 10
-
-    lista_identificadores        go to state 56
-    declaracao_parametros_lista  go to state 57
-    declaracao_parametros        go to state 58
-
-
-State 36
+Estado 39
 
    21 declaracao_procedimento: TOKEN_PROCEDURE ID parametros_formais_opcional • TOKEN_PONTOVIRG bloco_subrot
 
-    TOKEN_PONTOVIRG  shift, and go to state 59
+    TOKEN_PONTOVIRG  deslocar, e ir ao estado 61
 
 
-State 37
+Estado 40
 
-   24 parametros_formais_opcional: parametros_formais •
+   42 condicional: TOKEN_IF • expressao TOKEN_THEN comando
+   43            | TOKEN_IF • expressao TOKEN_THEN comando TOKEN_ELSE comando
 
-    $default  reduce using rule 24 (parametros_formais_opcional)
+    TOKEN_FALSE    deslocar, e ir ao estado 62
+    TOKEN_TRUE     deslocar, e ir ao estado 63
+    TOKEN_NOT      deslocar, e ir ao estado 64
+    TOKEN_SUBT     deslocar, e ir ao estado 65
+    TOKEN_ABREPAR  deslocar, e ir ao estado 66
+    ID             deslocar, e ir ao estado 67
+    NUMERO         deslocar, e ir ao estado 68
 
+    expressao          ir ao estado 69
+    expressao_simples  ir ao estado 70
+    termo              ir ao estado 71
+    fator              ir ao estado 72
+    logico             ir ao estado 73
 
-State 38
 
-   22 declaracao_funcao: TOKEN_FUNCTION ID parametros_formais_opcional • TOKEN_DOISP tipo TOKEN_PONTOVIRG bloco_subrot
+Estado 41
 
-    TOKEN_DOISP  shift, and go to state 60
+   44 repeticao: TOKEN_WHILE • expressao TOKEN_DO comando
 
+    TOKEN_FALSE    deslocar, e ir ao estado 62
+    TOKEN_TRUE     deslocar, e ir ao estado 63
+    TOKEN_NOT      deslocar, e ir ao estado 64
+    TOKEN_SUBT     deslocar, e ir ao estado 65
+    TOKEN_ABREPAR  deslocar, e ir ao estado 66
+    ID             deslocar, e ir ao estado 67
+    NUMERO         deslocar, e ir ao estado 68
 
-State 39
+    expressao          ir ao estado 74
+    expressao_simples  ir ao estado 70
+    termo              ir ao estado 71
+    fator              ir ao estado 72
+    logico             ir ao estado 73
 
-   41 condicional: TOKEN_IF • expressao TOKEN_THEN comando
-   42            | TOKEN_IF • expressao TOKEN_THEN comando TOKEN_ELSE comando
 
-    TOKEN_FALSE    shift, and go to state 61
-    TOKEN_TRUE     shift, and go to state 62
-    TOKEN_NOT      shift, and go to state 63
-    TOKEN_SUBT     shift, and go to state 64
-    TOKEN_ABREPAR  shift, and go to state 65
-    ID             shift, and go to state 66
-    NUMERO         shift, and go to state 67
+Estado 42
 
-    expressao          go to state 68
-    expressao_simples  go to state 69
-    termo              go to state 70
-    fator              go to state 71
-    logico             go to state 72
+   45 leitura: TOKEN_READ • TOKEN_ABREPAR lista_identificadores TOKEN_FECHAPAR
 
+    TOKEN_ABREPAR  deslocar, e ir ao estado 75
 
-State 40
 
-   43 repeticao: TOKEN_WHILE • expressao TOKEN_DO comando
+Estado 43
 
-    TOKEN_FALSE    shift, and go to state 61
-    TOKEN_TRUE     shift, and go to state 62
-    TOKEN_NOT      shift, and go to state 63
-    TOKEN_SUBT     shift, and go to state 64
-    TOKEN_ABREPAR  shift, and go to state 65
-    ID             shift, and go to state 66
-    NUMERO         shift, and go to state 67
+   46 escrita: TOKEN_WRITE • TOKEN_ABREPAR lista_expressoes TOKEN_FECHAPAR
 
-    expressao          go to state 73
-    expressao_simples  go to state 69
-    termo              go to state 70
-    fator              go to state 71
-    logico             go to state 72
+    TOKEN_ABREPAR  deslocar, e ir ao estado 76
 
 
-State 41
+Estado 44
 
-   44 leitura: TOKEN_READ • TOKEN_ABREPAR lista_identificadores TOKEN_FECHAPAR
+   40 atribuicao: ID • TOKEN_ATRIB expressao
+   41 chamada_procedimento: ID • TOKEN_ABREPAR lista_expressoes_opcional TOKEN_FECHAPAR
 
-    TOKEN_ABREPAR  shift, and go to state 74
+    TOKEN_ABREPAR  deslocar, e ir ao estado 77
+    TOKEN_ATRIB    deslocar, e ir ao estado 78
 
 
-State 42
+Estado 45
 
-   45 escrita: TOKEN_WRITE • TOKEN_ABREPAR lista_expressoes TOKEN_FECHAPAR
+   39 comando: comando_composto •
 
-    TOKEN_ABREPAR  shift, and go to state 75
+    $padrão  reduzir usando a regra 39 (comando)
 
 
-State 43
+Estado 46
 
-   39 atribuicao: ID • TOKEN_ATRIB expressao
-   40 chamada_procedimento: ID • TOKEN_ABREPAR lista_expressoes_opcional TOKEN_FECHAPAR
+   30 comando_composto: TOKEN_BEGIN comando_lista • TOKEN_END
+   32 comando_lista: comando_lista • TOKEN_PONTOVIRG comando
 
-    TOKEN_ABREPAR  shift, and go to state 76
-    TOKEN_ATRIB    shift, and go to state 77
+    TOKEN_END        deslocar, e ir ao estado 79
+    TOKEN_PONTOVIRG  deslocar, e ir ao estado 80
 
 
-State 44
+Estado 47
 
-   38 comando: comando_composto •
+   31 comando_lista: comando •
 
-    $default  reduce using rule 38 (comando)
+    $padrão  reduzir usando a regra 31 (comando_lista)
 
 
-State 45
+Estado 48
 
-   29 comando_composto: TOKEN_BEGIN comando_lista • TOKEN_END
-   31 comando_lista: comando_lista • TOKEN_PONTOVIRG comando
+   33 comando: atribuicao •
 
-    TOKEN_END        shift, and go to state 78
-    TOKEN_PONTOVIRG  shift, and go to state 79
+    $padrão  reduzir usando a regra 33 (comando)
 
 
-State 46
+Estado 49
 
-   30 comando_lista: comando •
+   34 comando: chamada_procedimento •
 
-    $default  reduce using rule 30 (comando_lista)
+    $padrão  reduzir usando a regra 34 (comando)
 
 
-State 47
+Estado 50
 
-   32 comando: atribuicao •
+   35 comando: condicional •
 
-    $default  reduce using rule 32 (comando)
+    $padrão  reduzir usando a regra 35 (comando)
 
 
-State 48
+Estado 51
 
-   33 comando: chamada_procedimento •
+   36 comando: repeticao •
 
-    $default  reduce using rule 33 (comando)
+    $padrão  reduzir usando a regra 36 (comando)
 
 
-State 49
+Estado 52
 
-   34 comando: condicional •
+   37 comando: leitura •
 
-    $default  reduce using rule 34 (comando)
+    $padrão  reduzir usando a regra 37 (comando)
 
 
-State 50
+Estado 53
 
-   35 comando: repeticao •
+   38 comando: escrita •
 
-    $default  reduce using rule 35 (comando)
+    $padrão  reduzir usando a regra 38 (comando)
 
 
-State 51
-
-   36 comando: leitura •
-
-    $default  reduce using rule 36 (comando)
-
-
-State 52
-
-   37 comando: escrita •
-
-    $default  reduce using rule 37 (comando)
-
-
-State 53
+Estado 54
 
    18 secao_declaracao_subrotinas: secao_declaracao_subrotinas declaracao_subrotina TOKEN_PONTOVIRG •
 
-    $default  reduce using rule 18 (secao_declaracao_subrotinas)
+    $padrão  reduzir usando a regra 18 (secao_declaracao_subrotinas)
 
 
-State 54
+Estado 55
+
+   29 declaracao_parametros: lista_identificadores • TOKEN_DOISP tipo
+
+    TOKEN_DOISP  deslocar, e ir ao estado 81
+
+
+Estado 56
+
+   26 parametros_formais: TOKEN_ABREPAR declaracao_parametros_lista • TOKEN_FECHAPAR
+   28 declaracao_parametros_lista: declaracao_parametros_lista • TOKEN_PONTOVIRG declaracao_parametros
+
+    TOKEN_FECHAPAR   deslocar, e ir ao estado 82
+    TOKEN_PONTOVIRG  deslocar, e ir ao estado 83
+
+
+Estado 57
+
+   27 declaracao_parametros_lista: declaracao_parametros •
+
+    $padrão  reduzir usando a regra 27 (declaracao_parametros_lista)
+
+
+Estado 58
+
+   22 declaracao_funcao: declaracao_funcao_cabecalho parametros_formais_opcional TOKEN_DOISP • tipo TOKEN_PONTOVIRG bloco_subrot
+
+    TOKEN_INTEGER  deslocar, e ir ao estado 36
+    TOKEN_BOOLEAN  deslocar, e ir ao estado 37
+
+    tipo  ir ao estado 84
+
+
+Estado 59
 
    14 lista_identificadores_resto_opcional: lista_identificadores_resto_opcional TOKEN_VIRG ID •
 
-    $default  reduce using rule 14 (lista_identificadores_resto_opcional)
+    $padrão  reduzir usando a regra 14 (lista_identificadores_resto_opcional)
 
 
-State 55
+Estado 60
 
    10 lista_declaracao_variaveis_opcional: lista_declaracao_variaveis_opcional declaracao_variaveis • TOKEN_PONTOVIRG
 
-    TOKEN_PONTOVIRG  shift, and go to state 80
+    TOKEN_PONTOVIRG  deslocar, e ir ao estado 85
 
 
-State 56
-
-   28 declaracao_parametros: lista_identificadores • TOKEN_DOISP tipo
-
-    TOKEN_DOISP  shift, and go to state 81
-
-
-State 57
-
-   25 parametros_formais: TOKEN_ABREPAR declaracao_parametros_lista • TOKEN_FECHAPAR
-   27 declaracao_parametros_lista: declaracao_parametros_lista • TOKEN_PONTOVIRG declaracao_parametros
-
-    TOKEN_FECHAPAR   shift, and go to state 82
-    TOKEN_PONTOVIRG  shift, and go to state 83
-
-
-State 58
-
-   26 declaracao_parametros_lista: declaracao_parametros •
-
-    $default  reduce using rule 26 (declaracao_parametros_lista)
-
-
-State 59
+Estado 61
 
    21 declaracao_procedimento: TOKEN_PROCEDURE ID parametros_formais_opcional TOKEN_PONTOVIRG • bloco_subrot
 
-    TOKEN_VAR  shift, and go to state 6
+    TOKEN_VAR  deslocar, e ir ao estado 6
 
-    $default  reduce using rule 4 (secao_declaracao_variaveis_opcional)
+    $padrão  reduzir usando a regra 4 (secao_declaracao_variaveis_opcional)
 
-    bloco_subrot                         go to state 84
-    secao_declaracao_variaveis_opcional  go to state 85
-    secao_declaracao_variaveis           go to state 9
+    bloco_subrot                         ir ao estado 86
+    secao_declaracao_variaveis_opcional  ir ao estado 87
+    secao_declaracao_variaveis           ir ao estado 9
 
 
-State 60
+Estado 62
 
-   22 declaracao_funcao: TOKEN_FUNCTION ID parametros_formais_opcional TOKEN_DOISP • tipo TOKEN_PONTOVIRG bloco_subrot
+   76 logico: TOKEN_FALSE •
 
-    TOKEN_INTEGER  shift, and go to state 32
-    TOKEN_BOOLEAN  shift, and go to state 33
+    $padrão  reduzir usando a regra 76 (logico)
 
-    tipo  go to state 86
 
+Estado 63
 
-State 61
+   77 logico: TOKEN_TRUE •
 
-   75 logico: TOKEN_FALSE •
+    $padrão  reduzir usando a regra 77 (logico)
 
-    $default  reduce using rule 75 (logico)
 
+Estado 64
 
-State 62
+   74 fator: TOKEN_NOT • fator
 
-   76 logico: TOKEN_TRUE •
+    TOKEN_FALSE    deslocar, e ir ao estado 62
+    TOKEN_TRUE     deslocar, e ir ao estado 63
+    TOKEN_NOT      deslocar, e ir ao estado 64
+    TOKEN_SUBT     deslocar, e ir ao estado 65
+    TOKEN_ABREPAR  deslocar, e ir ao estado 66
+    ID             deslocar, e ir ao estado 67
+    NUMERO         deslocar, e ir ao estado 68
 
-    $default  reduce using rule 76 (logico)
+    fator   ir ao estado 88
+    logico  ir ao estado 73
 
 
-State 63
+Estado 65
 
-   73 fator: TOKEN_NOT • fator
+   75 fator: TOKEN_SUBT • fator
 
-    TOKEN_FALSE    shift, and go to state 61
-    TOKEN_TRUE     shift, and go to state 62
-    TOKEN_NOT      shift, and go to state 63
-    TOKEN_SUBT     shift, and go to state 64
-    TOKEN_ABREPAR  shift, and go to state 65
-    ID             shift, and go to state 66
-    NUMERO         shift, and go to state 67
+    TOKEN_FALSE    deslocar, e ir ao estado 62
+    TOKEN_TRUE     deslocar, e ir ao estado 63
+    TOKEN_NOT      deslocar, e ir ao estado 64
+    TOKEN_SUBT     deslocar, e ir ao estado 65
+    TOKEN_ABREPAR  deslocar, e ir ao estado 66
+    ID             deslocar, e ir ao estado 67
+    NUMERO         deslocar, e ir ao estado 68
 
-    fator   go to state 87
-    logico  go to state 72
+    fator   ir ao estado 89
+    logico  ir ao estado 73
 
 
-State 64
+Estado 66
 
-   74 fator: TOKEN_SUBT • fator
+   73 fator: TOKEN_ABREPAR • expressao TOKEN_FECHAPAR
 
-    TOKEN_FALSE    shift, and go to state 61
-    TOKEN_TRUE     shift, and go to state 62
-    TOKEN_NOT      shift, and go to state 63
-    TOKEN_SUBT     shift, and go to state 64
-    TOKEN_ABREPAR  shift, and go to state 65
-    ID             shift, and go to state 66
-    NUMERO         shift, and go to state 67
+    TOKEN_FALSE    deslocar, e ir ao estado 62
+    TOKEN_TRUE     deslocar, e ir ao estado 63
+    TOKEN_NOT      deslocar, e ir ao estado 64
+    TOKEN_SUBT     deslocar, e ir ao estado 65
+    TOKEN_ABREPAR  deslocar, e ir ao estado 66
+    ID             deslocar, e ir ao estado 67
+    NUMERO         deslocar, e ir ao estado 68
 
-    fator   go to state 88
-    logico  go to state 72
+    expressao          ir ao estado 90
+    expressao_simples  ir ao estado 70
+    termo              ir ao estado 71
+    fator              ir ao estado 72
+    logico             ir ao estado 73
 
 
-State 65
+Estado 67
 
-   72 fator: TOKEN_ABREPAR • expressao TOKEN_FECHAPAR
+   69 fator: ID •
+   70      | ID • TOKEN_ABREPAR lista_expressoes_opcional TOKEN_FECHAPAR
 
-    TOKEN_FALSE    shift, and go to state 61
-    TOKEN_TRUE     shift, and go to state 62
-    TOKEN_NOT      shift, and go to state 63
-    TOKEN_SUBT     shift, and go to state 64
-    TOKEN_ABREPAR  shift, and go to state 65
-    ID             shift, and go to state 66
-    NUMERO         shift, and go to state 67
+    TOKEN_ABREPAR  deslocar, e ir ao estado 91
 
-    expressao          go to state 89
-    expressao_simples  go to state 69
-    termo              go to state 70
-    fator              go to state 71
-    logico             go to state 72
+    $padrão  reduzir usando a regra 69 (fator)
 
 
-State 66
+Estado 68
 
-   68 fator: ID •
-   69      | ID • TOKEN_ABREPAR lista_expressoes_opcional TOKEN_FECHAPAR
+   71 fator: NUMERO •
 
-    TOKEN_ABREPAR  shift, and go to state 90
+    $padrão  reduzir usando a regra 71 (fator)
 
-    $default  reduce using rule 68 (fator)
 
+Estado 69
 
-State 67
+   42 condicional: TOKEN_IF expressao • TOKEN_THEN comando
+   43            | TOKEN_IF expressao • TOKEN_THEN comando TOKEN_ELSE comando
 
-   70 fator: NUMERO •
+    TOKEN_THEN  deslocar, e ir ao estado 92
 
-    $default  reduce using rule 70 (fator)
 
+Estado 70
 
-State 68
+   51 expressao: expressao_simples •
+   52          | expressao_simples • relacao expressao_simples
+   60 expressao_simples: expressao_simples • op_aditivo termo
 
-   41 condicional: TOKEN_IF expressao • TOKEN_THEN comando
-   42            | TOKEN_IF expressao • TOKEN_THEN comando TOKEN_ELSE comando
+    TOKEN_OR          deslocar, e ir ao estado 93
+    TOKEN_SOMA        deslocar, e ir ao estado 94
+    TOKEN_SUBT        deslocar, e ir ao estado 95
+    TOKEN_IGUAL       deslocar, e ir ao estado 96
+    TOKEN_DIF         deslocar, e ir ao estado 97
+    TOKEN_MAIOR       deslocar, e ir ao estado 98
+    TOKEN_MENOR       deslocar, e ir ao estado 99
+    TOKEN_MAIORIGUAL  deslocar, e ir ao estado 100
+    TOKEN_MENORIGUAL  deslocar, e ir ao estado 101
 
-    TOKEN_THEN  shift, and go to state 91
+    $padrão  reduzir usando a regra 51 (expressao)
 
+    relacao     ir ao estado 102
+    op_aditivo  ir ao estado 103
 
-State 69
 
-   50 expressao: expressao_simples •
-   51          | expressao_simples • relacao expressao_simples
-   59 expressao_simples: expressao_simples • op_aditivo termo
+Estado 71
 
-    TOKEN_OR          shift, and go to state 92
-    TOKEN_SOMA        shift, and go to state 93
-    TOKEN_SUBT        shift, and go to state 94
-    TOKEN_IGUAL       shift, and go to state 95
-    TOKEN_DIF         shift, and go to state 96
-    TOKEN_MAIOR       shift, and go to state 97
-    TOKEN_MENOR       shift, and go to state 98
-    TOKEN_MAIORIGUAL  shift, and go to state 99
-    TOKEN_MENORIGUAL  shift, and go to state 100
+   59 expressao_simples: termo •
+   65 termo: termo • op_multiplicativo fator
 
-    $default  reduce using rule 50 (expressao)
+    TOKEN_AND   deslocar, e ir ao estado 104
+    TOKEN_DIV   deslocar, e ir ao estado 105
+    TOKEN_MULT  deslocar, e ir ao estado 106
 
-    relacao     go to state 101
-    op_aditivo  go to state 102
+    $padrão  reduzir usando a regra 59 (expressao_simples)
 
+    op_multiplicativo  ir ao estado 107
 
-State 70
 
-   58 expressao_simples: termo •
-   64 termo: termo • op_multiplicativo fator
+Estado 72
 
-    TOKEN_AND   shift, and go to state 103
-    TOKEN_DIV   shift, and go to state 104
-    TOKEN_MULT  shift, and go to state 105
+   64 termo: fator •
 
-    $default  reduce using rule 58 (expressao_simples)
+    $padrão  reduzir usando a regra 64 (termo)
 
-    op_multiplicativo  go to state 106
 
+Estado 73
 
-State 71
+   72 fator: logico •
 
-   63 termo: fator •
+    $padrão  reduzir usando a regra 72 (fator)
 
-    $default  reduce using rule 63 (termo)
 
+Estado 74
 
-State 72
+   44 repeticao: TOKEN_WHILE expressao • TOKEN_DO comando
 
-   71 fator: logico •
+    TOKEN_DO  deslocar, e ir ao estado 108
 
-    $default  reduce using rule 71 (fator)
 
+Estado 75
 
-State 73
+   45 leitura: TOKEN_READ TOKEN_ABREPAR • lista_identificadores TOKEN_FECHAPAR
 
-   43 repeticao: TOKEN_WHILE expressao • TOKEN_DO comando
+    ID  deslocar, e ir ao estado 10
 
-    TOKEN_DO  shift, and go to state 107
+    lista_identificadores  ir ao estado 109
 
 
-State 74
+Estado 76
 
-   44 leitura: TOKEN_READ TOKEN_ABREPAR • lista_identificadores TOKEN_FECHAPAR
+   46 escrita: TOKEN_WRITE TOKEN_ABREPAR • lista_expressoes TOKEN_FECHAPAR
 
-    ID  shift, and go to state 10
+    TOKEN_FALSE    deslocar, e ir ao estado 62
+    TOKEN_TRUE     deslocar, e ir ao estado 63
+    TOKEN_NOT      deslocar, e ir ao estado 64
+    TOKEN_SUBT     deslocar, e ir ao estado 65
+    TOKEN_ABREPAR  deslocar, e ir ao estado 66
+    ID             deslocar, e ir ao estado 67
+    NUMERO         deslocar, e ir ao estado 68
 
-    lista_identificadores  go to state 108
+    lista_expressoes   ir ao estado 110
+    expressao          ir ao estado 111
+    expressao_simples  ir ao estado 70
+    termo              ir ao estado 71
+    fator              ir ao estado 72
+    logico             ir ao estado 73
 
 
-State 75
+Estado 77
 
-   45 escrita: TOKEN_WRITE TOKEN_ABREPAR • lista_expressoes TOKEN_FECHAPAR
+   41 chamada_procedimento: ID TOKEN_ABREPAR • lista_expressoes_opcional TOKEN_FECHAPAR
 
-    TOKEN_FALSE    shift, and go to state 61
-    TOKEN_TRUE     shift, and go to state 62
-    TOKEN_NOT      shift, and go to state 63
-    TOKEN_SUBT     shift, and go to state 64
-    TOKEN_ABREPAR  shift, and go to state 65
-    ID             shift, and go to state 66
-    NUMERO         shift, and go to state 67
+    TOKEN_FALSE    deslocar, e ir ao estado 62
+    TOKEN_TRUE     deslocar, e ir ao estado 63
+    TOKEN_NOT      deslocar, e ir ao estado 64
+    TOKEN_SUBT     deslocar, e ir ao estado 65
+    TOKEN_ABREPAR  deslocar, e ir ao estado 66
+    ID             deslocar, e ir ao estado 67
+    NUMERO         deslocar, e ir ao estado 68
 
-    lista_expressoes   go to state 109
-    expressao          go to state 110
-    expressao_simples  go to state 69
-    termo              go to state 70
-    fator              go to state 71
-    logico             go to state 72
+    $padrão  reduzir usando a regra 49 (lista_expressoes_opcional)
 
+    lista_expressoes           ir ao estado 112
+    lista_expressoes_opcional  ir ao estado 113
+    expressao                  ir ao estado 111
+    expressao_simples          ir ao estado 70
+    termo                      ir ao estado 71
+    fator                      ir ao estado 72
+    logico                     ir ao estado 73
 
-State 76
 
-   40 chamada_procedimento: ID TOKEN_ABREPAR • lista_expressoes_opcional TOKEN_FECHAPAR
+Estado 78
 
-    TOKEN_FALSE    shift, and go to state 61
-    TOKEN_TRUE     shift, and go to state 62
-    TOKEN_NOT      shift, and go to state 63
-    TOKEN_SUBT     shift, and go to state 64
-    TOKEN_ABREPAR  shift, and go to state 65
-    ID             shift, and go to state 66
-    NUMERO         shift, and go to state 67
+   40 atribuicao: ID TOKEN_ATRIB • expressao
 
-    $default  reduce using rule 48 (lista_expressoes_opcional)
+    TOKEN_FALSE    deslocar, e ir ao estado 62
+    TOKEN_TRUE     deslocar, e ir ao estado 63
+    TOKEN_NOT      deslocar, e ir ao estado 64
+    TOKEN_SUBT     deslocar, e ir ao estado 65
+    TOKEN_ABREPAR  deslocar, e ir ao estado 66
+    ID             deslocar, e ir ao estado 67
+    NUMERO         deslocar, e ir ao estado 68
 
-    lista_expressoes           go to state 111
-    lista_expressoes_opcional  go to state 112
-    expressao                  go to state 110
-    expressao_simples          go to state 69
-    termo                      go to state 70
-    fator                      go to state 71
-    logico                     go to state 72
+    expressao          ir ao estado 114
+    expressao_simples  ir ao estado 70
+    termo              ir ao estado 71
+    fator              ir ao estado 72
+    logico             ir ao estado 73
 
 
-State 77
+Estado 79
 
-   39 atribuicao: ID TOKEN_ATRIB • expressao
+   30 comando_composto: TOKEN_BEGIN comando_lista TOKEN_END •
 
-    TOKEN_FALSE    shift, and go to state 61
-    TOKEN_TRUE     shift, and go to state 62
-    TOKEN_NOT      shift, and go to state 63
-    TOKEN_SUBT     shift, and go to state 64
-    TOKEN_ABREPAR  shift, and go to state 65
-    ID             shift, and go to state 66
-    NUMERO         shift, and go to state 67
+    $padrão  reduzir usando a regra 30 (comando_composto)
 
-    expressao          go to state 113
-    expressao_simples  go to state 69
-    termo              go to state 70
-    fator              go to state 71
-    logico             go to state 72
 
+Estado 80
 
-State 78
+   32 comando_lista: comando_lista TOKEN_PONTOVIRG • comando
 
-   29 comando_composto: TOKEN_BEGIN comando_lista TOKEN_END •
+    TOKEN_BEGIN  deslocar, e ir ao estado 27
+    TOKEN_IF     deslocar, e ir ao estado 40
+    TOKEN_WHILE  deslocar, e ir ao estado 41
+    TOKEN_READ   deslocar, e ir ao estado 42
+    TOKEN_WRITE  deslocar, e ir ao estado 43
+    ID           deslocar, e ir ao estado 44
 
-    $default  reduce using rule 29 (comando_composto)
+    comando_composto      ir ao estado 45
+    comando               ir ao estado 115
+    atribuicao            ir ao estado 48
+    chamada_procedimento  ir ao estado 49
+    condicional           ir ao estado 50
+    repeticao             ir ao estado 51
+    leitura               ir ao estado 52
+    escrita               ir ao estado 53
 
 
-State 79
+Estado 81
 
-   31 comando_lista: comando_lista TOKEN_PONTOVIRG • comando
+   29 declaracao_parametros: lista_identificadores TOKEN_DOISP • tipo
 
-    TOKEN_BEGIN  shift, and go to state 26
-    TOKEN_IF     shift, and go to state 39
-    TOKEN_WHILE  shift, and go to state 40
-    TOKEN_READ   shift, and go to state 41
-    TOKEN_WRITE  shift, and go to state 42
-    ID           shift, and go to state 43
+    TOKEN_INTEGER  deslocar, e ir ao estado 36
+    TOKEN_BOOLEAN  deslocar, e ir ao estado 37
 
-    comando_composto      go to state 44
-    comando               go to state 114
-    atribuicao            go to state 47
-    chamada_procedimento  go to state 48
-    condicional           go to state 49
-    repeticao             go to state 50
-    leitura               go to state 51
-    escrita               go to state 52
+    tipo  ir ao estado 116
 
 
-State 80
+Estado 82
+
+   26 parametros_formais: TOKEN_ABREPAR declaracao_parametros_lista TOKEN_FECHAPAR •
+
+    $padrão  reduzir usando a regra 26 (parametros_formais)
+
+
+Estado 83
+
+   28 declaracao_parametros_lista: declaracao_parametros_lista TOKEN_PONTOVIRG • declaracao_parametros
+
+    ID  deslocar, e ir ao estado 10
+
+    lista_identificadores  ir ao estado 55
+    declaracao_parametros  ir ao estado 117
+
+
+Estado 84
+
+   22 declaracao_funcao: declaracao_funcao_cabecalho parametros_formais_opcional TOKEN_DOISP tipo • TOKEN_PONTOVIRG bloco_subrot
+
+    TOKEN_PONTOVIRG  deslocar, e ir ao estado 118
+
+
+Estado 85
 
    10 lista_declaracao_variaveis_opcional: lista_declaracao_variaveis_opcional declaracao_variaveis TOKEN_PONTOVIRG •
 
-    $default  reduce using rule 10 (lista_declaracao_variaveis_opcional)
+    $padrão  reduzir usando a regra 10 (lista_declaracao_variaveis_opcional)
 
 
-State 81
-
-   28 declaracao_parametros: lista_identificadores TOKEN_DOISP • tipo
-
-    TOKEN_INTEGER  shift, and go to state 32
-    TOKEN_BOOLEAN  shift, and go to state 33
-
-    tipo  go to state 115
-
-
-State 82
-
-   25 parametros_formais: TOKEN_ABREPAR declaracao_parametros_lista TOKEN_FECHAPAR •
-
-    $default  reduce using rule 25 (parametros_formais)
-
-
-State 83
-
-   27 declaracao_parametros_lista: declaracao_parametros_lista TOKEN_PONTOVIRG • declaracao_parametros
-
-    ID  shift, and go to state 10
-
-    lista_identificadores  go to state 56
-    declaracao_parametros  go to state 116
-
-
-State 84
+Estado 86
 
    21 declaracao_procedimento: TOKEN_PROCEDURE ID parametros_formais_opcional TOKEN_PONTOVIRG bloco_subrot •
 
-    $default  reduce using rule 21 (declaracao_procedimento)
+    $padrão  reduzir usando a regra 21 (declaracao_procedimento)
 
 
-State 85
+Estado 87
 
     3 bloco_subrot: secao_declaracao_variaveis_opcional • comando_composto
 
-    TOKEN_BEGIN  shift, and go to state 26
+    TOKEN_BEGIN  deslocar, e ir ao estado 27
 
-    comando_composto  go to state 117
+    comando_composto  ir ao estado 119
 
 
-State 86
+Estado 88
 
-   22 declaracao_funcao: TOKEN_FUNCTION ID parametros_formais_opcional TOKEN_DOISP tipo • TOKEN_PONTOVIRG bloco_subrot
+   74 fator: TOKEN_NOT fator •
 
-    TOKEN_PONTOVIRG  shift, and go to state 118
+    $padrão  reduzir usando a regra 74 (fator)
 
 
-State 87
+Estado 89
 
-   73 fator: TOKEN_NOT fator •
+   75 fator: TOKEN_SUBT fator •
 
-    $default  reduce using rule 73 (fator)
+    $padrão  reduzir usando a regra 75 (fator)
 
 
-State 88
+Estado 90
 
-   74 fator: TOKEN_SUBT fator •
+   73 fator: TOKEN_ABREPAR expressao • TOKEN_FECHAPAR
 
-    $default  reduce using rule 74 (fator)
+    TOKEN_FECHAPAR  deslocar, e ir ao estado 120
 
 
-State 89
+Estado 91
 
-   72 fator: TOKEN_ABREPAR expressao • TOKEN_FECHAPAR
+   70 fator: ID TOKEN_ABREPAR • lista_expressoes_opcional TOKEN_FECHAPAR
 
-    TOKEN_FECHAPAR  shift, and go to state 119
+    TOKEN_FALSE    deslocar, e ir ao estado 62
+    TOKEN_TRUE     deslocar, e ir ao estado 63
+    TOKEN_NOT      deslocar, e ir ao estado 64
+    TOKEN_SUBT     deslocar, e ir ao estado 65
+    TOKEN_ABREPAR  deslocar, e ir ao estado 66
+    ID             deslocar, e ir ao estado 67
+    NUMERO         deslocar, e ir ao estado 68
 
+    $padrão  reduzir usando a regra 49 (lista_expressoes_opcional)
 
-State 90
+    lista_expressoes           ir ao estado 112
+    lista_expressoes_opcional  ir ao estado 121
+    expressao                  ir ao estado 111
+    expressao_simples          ir ao estado 70
+    termo                      ir ao estado 71
+    fator                      ir ao estado 72
+    logico                     ir ao estado 73
 
-   69 fator: ID TOKEN_ABREPAR • lista_expressoes_opcional TOKEN_FECHAPAR
 
-    TOKEN_FALSE    shift, and go to state 61
-    TOKEN_TRUE     shift, and go to state 62
-    TOKEN_NOT      shift, and go to state 63
-    TOKEN_SUBT     shift, and go to state 64
-    TOKEN_ABREPAR  shift, and go to state 65
-    ID             shift, and go to state 66
-    NUMERO         shift, and go to state 67
+Estado 92
 
-    $default  reduce using rule 48 (lista_expressoes_opcional)
+   42 condicional: TOKEN_IF expressao TOKEN_THEN • comando
+   43            | TOKEN_IF expressao TOKEN_THEN • comando TOKEN_ELSE comando
 
-    lista_expressoes           go to state 111
-    lista_expressoes_opcional  go to state 120
-    expressao                  go to state 110
-    expressao_simples          go to state 69
-    termo                      go to state 70
-    fator                      go to state 71
-    logico                     go to state 72
+    TOKEN_BEGIN  deslocar, e ir ao estado 27
+    TOKEN_IF     deslocar, e ir ao estado 40
+    TOKEN_WHILE  deslocar, e ir ao estado 41
+    TOKEN_READ   deslocar, e ir ao estado 42
+    TOKEN_WRITE  deslocar, e ir ao estado 43
+    ID           deslocar, e ir ao estado 44
 
+    comando_composto      ir ao estado 45
+    comando               ir ao estado 122
+    atribuicao            ir ao estado 48
+    chamada_procedimento  ir ao estado 49
+    condicional           ir ao estado 50
+    repeticao             ir ao estado 51
+    leitura               ir ao estado 52
+    escrita               ir ao estado 53
 
-State 91
 
-   41 condicional: TOKEN_IF expressao TOKEN_THEN • comando
-   42            | TOKEN_IF expressao TOKEN_THEN • comando TOKEN_ELSE comando
+Estado 93
 
-    TOKEN_BEGIN  shift, and go to state 26
-    TOKEN_IF     shift, and go to state 39
-    TOKEN_WHILE  shift, and go to state 40
-    TOKEN_READ   shift, and go to state 41
-    TOKEN_WRITE  shift, and go to state 42
-    ID           shift, and go to state 43
+   63 op_aditivo: TOKEN_OR •
 
-    comando_composto      go to state 44
-    comando               go to state 121
-    atribuicao            go to state 47
-    chamada_procedimento  go to state 48
-    condicional           go to state 49
-    repeticao             go to state 50
-    leitura               go to state 51
-    escrita               go to state 52
+    $padrão  reduzir usando a regra 63 (op_aditivo)
 
 
-State 92
+Estado 94
 
-   62 op_aditivo: TOKEN_OR •
+   61 op_aditivo: TOKEN_SOMA •
 
-    $default  reduce using rule 62 (op_aditivo)
+    $padrão  reduzir usando a regra 61 (op_aditivo)
 
 
-State 93
+Estado 95
 
-   60 op_aditivo: TOKEN_SOMA •
+   62 op_aditivo: TOKEN_SUBT •
 
-    $default  reduce using rule 60 (op_aditivo)
+    $padrão  reduzir usando a regra 62 (op_aditivo)
 
 
-State 94
+Estado 96
 
-   61 op_aditivo: TOKEN_SUBT •
+   53 relacao: TOKEN_IGUAL •
 
-    $default  reduce using rule 61 (op_aditivo)
+    $padrão  reduzir usando a regra 53 (relacao)
 
 
-State 95
+Estado 97
 
-   52 relacao: TOKEN_IGUAL •
+   54 relacao: TOKEN_DIF •
 
-    $default  reduce using rule 52 (relacao)
+    $padrão  reduzir usando a regra 54 (relacao)
 
 
-State 96
+Estado 98
 
-   53 relacao: TOKEN_DIF •
+   57 relacao: TOKEN_MAIOR •
 
-    $default  reduce using rule 53 (relacao)
+    $padrão  reduzir usando a regra 57 (relacao)
 
 
-State 97
+Estado 99
 
-   56 relacao: TOKEN_MAIOR •
+   55 relacao: TOKEN_MENOR •
 
-    $default  reduce using rule 56 (relacao)
+    $padrão  reduzir usando a regra 55 (relacao)
 
 
-State 98
+Estado 100
 
-   54 relacao: TOKEN_MENOR •
+   58 relacao: TOKEN_MAIORIGUAL •
 
-    $default  reduce using rule 54 (relacao)
+    $padrão  reduzir usando a regra 58 (relacao)
 
 
-State 99
+Estado 101
 
-   57 relacao: TOKEN_MAIORIGUAL •
+   56 relacao: TOKEN_MENORIGUAL •
 
-    $default  reduce using rule 57 (relacao)
+    $padrão  reduzir usando a regra 56 (relacao)
 
 
-State 100
+Estado 102
 
-   55 relacao: TOKEN_MENORIGUAL •
+   52 expressao: expressao_simples relacao • expressao_simples
 
-    $default  reduce using rule 55 (relacao)
+    TOKEN_FALSE    deslocar, e ir ao estado 62
+    TOKEN_TRUE     deslocar, e ir ao estado 63
+    TOKEN_NOT      deslocar, e ir ao estado 64
+    TOKEN_SUBT     deslocar, e ir ao estado 65
+    TOKEN_ABREPAR  deslocar, e ir ao estado 66
+    ID             deslocar, e ir ao estado 67
+    NUMERO         deslocar, e ir ao estado 68
 
+    expressao_simples  ir ao estado 123
+    termo              ir ao estado 71
+    fator              ir ao estado 72
+    logico             ir ao estado 73
 
-State 101
 
-   51 expressao: expressao_simples relacao • expressao_simples
+Estado 103
 
-    TOKEN_FALSE    shift, and go to state 61
-    TOKEN_TRUE     shift, and go to state 62
-    TOKEN_NOT      shift, and go to state 63
-    TOKEN_SUBT     shift, and go to state 64
-    TOKEN_ABREPAR  shift, and go to state 65
-    ID             shift, and go to state 66
-    NUMERO         shift, and go to state 67
+   60 expressao_simples: expressao_simples op_aditivo • termo
 
-    expressao_simples  go to state 122
-    termo              go to state 70
-    fator              go to state 71
-    logico             go to state 72
+    TOKEN_FALSE    deslocar, e ir ao estado 62
+    TOKEN_TRUE     deslocar, e ir ao estado 63
+    TOKEN_NOT      deslocar, e ir ao estado 64
+    TOKEN_SUBT     deslocar, e ir ao estado 65
+    TOKEN_ABREPAR  deslocar, e ir ao estado 66
+    ID             deslocar, e ir ao estado 67
+    NUMERO         deslocar, e ir ao estado 68
 
+    termo   ir ao estado 124
+    fator   ir ao estado 72
+    logico  ir ao estado 73
 
-State 102
 
-   59 expressao_simples: expressao_simples op_aditivo • termo
+Estado 104
 
-    TOKEN_FALSE    shift, and go to state 61
-    TOKEN_TRUE     shift, and go to state 62
-    TOKEN_NOT      shift, and go to state 63
-    TOKEN_SUBT     shift, and go to state 64
-    TOKEN_ABREPAR  shift, and go to state 65
-    ID             shift, and go to state 66
-    NUMERO         shift, and go to state 67
+   68 op_multiplicativo: TOKEN_AND •
 
-    termo   go to state 123
-    fator   go to state 71
-    logico  go to state 72
+    $padrão  reduzir usando a regra 68 (op_multiplicativo)
 
 
-State 103
+Estado 105
 
-   67 op_multiplicativo: TOKEN_AND •
+   67 op_multiplicativo: TOKEN_DIV •
 
-    $default  reduce using rule 67 (op_multiplicativo)
+    $padrão  reduzir usando a regra 67 (op_multiplicativo)
 
 
-State 104
+Estado 106
 
-   66 op_multiplicativo: TOKEN_DIV •
+   66 op_multiplicativo: TOKEN_MULT •
 
-    $default  reduce using rule 66 (op_multiplicativo)
+    $padrão  reduzir usando a regra 66 (op_multiplicativo)
 
 
-State 105
+Estado 107
 
-   65 op_multiplicativo: TOKEN_MULT •
+   65 termo: termo op_multiplicativo • fator
 
-    $default  reduce using rule 65 (op_multiplicativo)
+    TOKEN_FALSE    deslocar, e ir ao estado 62
+    TOKEN_TRUE     deslocar, e ir ao estado 63
+    TOKEN_NOT      deslocar, e ir ao estado 64
+    TOKEN_SUBT     deslocar, e ir ao estado 65
+    TOKEN_ABREPAR  deslocar, e ir ao estado 66
+    ID             deslocar, e ir ao estado 67
+    NUMERO         deslocar, e ir ao estado 68
 
+    fator   ir ao estado 125
+    logico  ir ao estado 73
 
-State 106
 
-   64 termo: termo op_multiplicativo • fator
+Estado 108
 
-    TOKEN_FALSE    shift, and go to state 61
-    TOKEN_TRUE     shift, and go to state 62
-    TOKEN_NOT      shift, and go to state 63
-    TOKEN_SUBT     shift, and go to state 64
-    TOKEN_ABREPAR  shift, and go to state 65
-    ID             shift, and go to state 66
-    NUMERO         shift, and go to state 67
+   44 repeticao: TOKEN_WHILE expressao TOKEN_DO • comando
 
-    fator   go to state 124
-    logico  go to state 72
+    TOKEN_BEGIN  deslocar, e ir ao estado 27
+    TOKEN_IF     deslocar, e ir ao estado 40
+    TOKEN_WHILE  deslocar, e ir ao estado 41
+    TOKEN_READ   deslocar, e ir ao estado 42
+    TOKEN_WRITE  deslocar, e ir ao estado 43
+    ID           deslocar, e ir ao estado 44
 
+    comando_composto      ir ao estado 45
+    comando               ir ao estado 126
+    atribuicao            ir ao estado 48
+    chamada_procedimento  ir ao estado 49
+    condicional           ir ao estado 50
+    repeticao             ir ao estado 51
+    leitura               ir ao estado 52
+    escrita               ir ao estado 53
 
-State 107
 
-   43 repeticao: TOKEN_WHILE expressao TOKEN_DO • comando
+Estado 109
 
-    TOKEN_BEGIN  shift, and go to state 26
-    TOKEN_IF     shift, and go to state 39
-    TOKEN_WHILE  shift, and go to state 40
-    TOKEN_READ   shift, and go to state 41
-    TOKEN_WRITE  shift, and go to state 42
-    ID           shift, and go to state 43
+   45 leitura: TOKEN_READ TOKEN_ABREPAR lista_identificadores • TOKEN_FECHAPAR
 
-    comando_composto      go to state 44
-    comando               go to state 125
-    atribuicao            go to state 47
-    chamada_procedimento  go to state 48
-    condicional           go to state 49
-    repeticao             go to state 50
-    leitura               go to state 51
-    escrita               go to state 52
+    TOKEN_FECHAPAR  deslocar, e ir ao estado 127
 
 
-State 108
+Estado 110
 
-   44 leitura: TOKEN_READ TOKEN_ABREPAR lista_identificadores • TOKEN_FECHAPAR
+   46 escrita: TOKEN_WRITE TOKEN_ABREPAR lista_expressoes • TOKEN_FECHAPAR
+   48 lista_expressoes: lista_expressoes • TOKEN_VIRG expressao
 
-    TOKEN_FECHAPAR  shift, and go to state 126
+    TOKEN_FECHAPAR  deslocar, e ir ao estado 128
+    TOKEN_VIRG      deslocar, e ir ao estado 129
 
 
-State 109
+Estado 111
 
-   45 escrita: TOKEN_WRITE TOKEN_ABREPAR lista_expressoes • TOKEN_FECHAPAR
-   47 lista_expressoes: lista_expressoes • TOKEN_VIRG expressao
+   47 lista_expressoes: expressao •
 
-    TOKEN_FECHAPAR  shift, and go to state 127
-    TOKEN_VIRG      shift, and go to state 128
+    $padrão  reduzir usando a regra 47 (lista_expressoes)
 
 
-State 110
+Estado 112
 
-   46 lista_expressoes: expressao •
+   48 lista_expressoes: lista_expressoes • TOKEN_VIRG expressao
+   50 lista_expressoes_opcional: lista_expressoes •
 
-    $default  reduce using rule 46 (lista_expressoes)
+    TOKEN_VIRG  deslocar, e ir ao estado 129
 
+    $padrão  reduzir usando a regra 50 (lista_expressoes_opcional)
 
-State 111
 
-   47 lista_expressoes: lista_expressoes • TOKEN_VIRG expressao
-   49 lista_expressoes_opcional: lista_expressoes •
+Estado 113
 
-    TOKEN_VIRG  shift, and go to state 128
+   41 chamada_procedimento: ID TOKEN_ABREPAR lista_expressoes_opcional • TOKEN_FECHAPAR
 
-    $default  reduce using rule 49 (lista_expressoes_opcional)
+    TOKEN_FECHAPAR  deslocar, e ir ao estado 130
 
 
-State 112
+Estado 114
 
-   40 chamada_procedimento: ID TOKEN_ABREPAR lista_expressoes_opcional • TOKEN_FECHAPAR
+   40 atribuicao: ID TOKEN_ATRIB expressao •
 
-    TOKEN_FECHAPAR  shift, and go to state 129
+    $padrão  reduzir usando a regra 40 (atribuicao)
 
 
-State 113
+Estado 115
 
-   39 atribuicao: ID TOKEN_ATRIB expressao •
+   32 comando_lista: comando_lista TOKEN_PONTOVIRG comando •
 
-    $default  reduce using rule 39 (atribuicao)
+    $padrão  reduzir usando a regra 32 (comando_lista)
 
 
-State 114
+Estado 116
 
-   31 comando_lista: comando_lista TOKEN_PONTOVIRG comando •
+   29 declaracao_parametros: lista_identificadores TOKEN_DOISP tipo •
 
-    $default  reduce using rule 31 (comando_lista)
+    $padrão  reduzir usando a regra 29 (declaracao_parametros)
 
 
-State 115
+Estado 117
 
-   28 declaracao_parametros: lista_identificadores TOKEN_DOISP tipo •
+   28 declaracao_parametros_lista: declaracao_parametros_lista TOKEN_PONTOVIRG declaracao_parametros •
 
-    $default  reduce using rule 28 (declaracao_parametros)
+    $padrão  reduzir usando a regra 28 (declaracao_parametros_lista)
 
 
-State 116
+Estado 118
 
-   27 declaracao_parametros_lista: declaracao_parametros_lista TOKEN_PONTOVIRG declaracao_parametros •
+   22 declaracao_funcao: declaracao_funcao_cabecalho parametros_formais_opcional TOKEN_DOISP tipo TOKEN_PONTOVIRG • bloco_subrot
 
-    $default  reduce using rule 27 (declaracao_parametros_lista)
+    TOKEN_VAR  deslocar, e ir ao estado 6
 
+    $padrão  reduzir usando a regra 4 (secao_declaracao_variaveis_opcional)
 
-State 117
+    bloco_subrot                         ir ao estado 131
+    secao_declaracao_variaveis_opcional  ir ao estado 87
+    secao_declaracao_variaveis           ir ao estado 9
+
+
+Estado 119
 
     3 bloco_subrot: secao_declaracao_variaveis_opcional comando_composto •
 
-    $default  reduce using rule 3 (bloco_subrot)
+    $padrão  reduzir usando a regra 3 (bloco_subrot)
 
 
-State 118
+Estado 120
 
-   22 declaracao_funcao: TOKEN_FUNCTION ID parametros_formais_opcional TOKEN_DOISP tipo TOKEN_PONTOVIRG • bloco_subrot
+   73 fator: TOKEN_ABREPAR expressao TOKEN_FECHAPAR •
 
-    TOKEN_VAR  shift, and go to state 6
+    $padrão  reduzir usando a regra 73 (fator)
 
-    $default  reduce using rule 4 (secao_declaracao_variaveis_opcional)
 
-    bloco_subrot                         go to state 130
-    secao_declaracao_variaveis_opcional  go to state 85
-    secao_declaracao_variaveis           go to state 9
+Estado 121
 
+   70 fator: ID TOKEN_ABREPAR lista_expressoes_opcional • TOKEN_FECHAPAR
 
-State 119
+    TOKEN_FECHAPAR  deslocar, e ir ao estado 132
 
-   72 fator: TOKEN_ABREPAR expressao TOKEN_FECHAPAR •
 
-    $default  reduce using rule 72 (fator)
+Estado 122
 
+   42 condicional: TOKEN_IF expressao TOKEN_THEN comando •
+   43            | TOKEN_IF expressao TOKEN_THEN comando • TOKEN_ELSE comando
 
-State 120
+    TOKEN_ELSE  deslocar, e ir ao estado 133
 
-   69 fator: ID TOKEN_ABREPAR lista_expressoes_opcional • TOKEN_FECHAPAR
+    TOKEN_ELSE  [reduzir usando a regra 42 (condicional)]
+    $padrão     reduzir usando a regra 42 (condicional)
 
-    TOKEN_FECHAPAR  shift, and go to state 131
 
+Estado 123
 
-State 121
+   52 expressao: expressao_simples relacao expressao_simples •
+   60 expressao_simples: expressao_simples • op_aditivo termo
 
-   41 condicional: TOKEN_IF expressao TOKEN_THEN comando •
-   42            | TOKEN_IF expressao TOKEN_THEN comando • TOKEN_ELSE comando
+    TOKEN_OR    deslocar, e ir ao estado 93
+    TOKEN_SOMA  deslocar, e ir ao estado 94
+    TOKEN_SUBT  deslocar, e ir ao estado 95
 
-    TOKEN_ELSE  shift, and go to state 132
+    $padrão  reduzir usando a regra 52 (expressao)
 
-    TOKEN_ELSE  [reduce using rule 41 (condicional)]
-    $default    reduce using rule 41 (condicional)
+    op_aditivo  ir ao estado 103
 
 
-State 122
+Estado 124
 
-   51 expressao: expressao_simples relacao expressao_simples •
-   59 expressao_simples: expressao_simples • op_aditivo termo
+   60 expressao_simples: expressao_simples op_aditivo termo •
+   65 termo: termo • op_multiplicativo fator
 
-    TOKEN_OR    shift, and go to state 92
-    TOKEN_SOMA  shift, and go to state 93
-    TOKEN_SUBT  shift, and go to state 94
+    TOKEN_AND   deslocar, e ir ao estado 104
+    TOKEN_DIV   deslocar, e ir ao estado 105
+    TOKEN_MULT  deslocar, e ir ao estado 106
 
-    $default  reduce using rule 51 (expressao)
+    $padrão  reduzir usando a regra 60 (expressao_simples)
 
-    op_aditivo  go to state 102
+    op_multiplicativo  ir ao estado 107
 
 
-State 123
+Estado 125
 
-   59 expressao_simples: expressao_simples op_aditivo termo •
-   64 termo: termo • op_multiplicativo fator
+   65 termo: termo op_multiplicativo fator •
 
-    TOKEN_AND   shift, and go to state 103
-    TOKEN_DIV   shift, and go to state 104
-    TOKEN_MULT  shift, and go to state 105
+    $padrão  reduzir usando a regra 65 (termo)
 
-    $default  reduce using rule 59 (expressao_simples)
 
-    op_multiplicativo  go to state 106
+Estado 126
 
+   44 repeticao: TOKEN_WHILE expressao TOKEN_DO comando •
 
-State 124
+    $padrão  reduzir usando a regra 44 (repeticao)
 
-   64 termo: termo op_multiplicativo fator •
 
-    $default  reduce using rule 64 (termo)
+Estado 127
 
+   45 leitura: TOKEN_READ TOKEN_ABREPAR lista_identificadores TOKEN_FECHAPAR •
 
-State 125
+    $padrão  reduzir usando a regra 45 (leitura)
 
-   43 repeticao: TOKEN_WHILE expressao TOKEN_DO comando •
 
-    $default  reduce using rule 43 (repeticao)
+Estado 128
 
+   46 escrita: TOKEN_WRITE TOKEN_ABREPAR lista_expressoes TOKEN_FECHAPAR •
 
-State 126
+    $padrão  reduzir usando a regra 46 (escrita)
 
-   44 leitura: TOKEN_READ TOKEN_ABREPAR lista_identificadores TOKEN_FECHAPAR •
 
-    $default  reduce using rule 44 (leitura)
+Estado 129
 
+   48 lista_expressoes: lista_expressoes TOKEN_VIRG • expressao
 
-State 127
+    TOKEN_FALSE    deslocar, e ir ao estado 62
+    TOKEN_TRUE     deslocar, e ir ao estado 63
+    TOKEN_NOT      deslocar, e ir ao estado 64
+    TOKEN_SUBT     deslocar, e ir ao estado 65
+    TOKEN_ABREPAR  deslocar, e ir ao estado 66
+    ID             deslocar, e ir ao estado 67
+    NUMERO         deslocar, e ir ao estado 68
 
-   45 escrita: TOKEN_WRITE TOKEN_ABREPAR lista_expressoes TOKEN_FECHAPAR •
+    expressao          ir ao estado 134
+    expressao_simples  ir ao estado 70
+    termo              ir ao estado 71
+    fator              ir ao estado 72
+    logico             ir ao estado 73
 
-    $default  reduce using rule 45 (escrita)
 
+Estado 130
 
-State 128
+   41 chamada_procedimento: ID TOKEN_ABREPAR lista_expressoes_opcional TOKEN_FECHAPAR •
 
-   47 lista_expressoes: lista_expressoes TOKEN_VIRG • expressao
+    $padrão  reduzir usando a regra 41 (chamada_procedimento)
 
-    TOKEN_FALSE    shift, and go to state 61
-    TOKEN_TRUE     shift, and go to state 62
-    TOKEN_NOT      shift, and go to state 63
-    TOKEN_SUBT     shift, and go to state 64
-    TOKEN_ABREPAR  shift, and go to state 65
-    ID             shift, and go to state 66
-    NUMERO         shift, and go to state 67
 
-    expressao          go to state 133
-    expressao_simples  go to state 69
-    termo              go to state 70
-    fator              go to state 71
-    logico             go to state 72
+Estado 131
 
+   22 declaracao_funcao: declaracao_funcao_cabecalho parametros_formais_opcional TOKEN_DOISP tipo TOKEN_PONTOVIRG bloco_subrot •
 
-State 129
+    $padrão  reduzir usando a regra 22 (declaracao_funcao)
 
-   40 chamada_procedimento: ID TOKEN_ABREPAR lista_expressoes_opcional TOKEN_FECHAPAR •
 
-    $default  reduce using rule 40 (chamada_procedimento)
+Estado 132
 
+   70 fator: ID TOKEN_ABREPAR lista_expressoes_opcional TOKEN_FECHAPAR •
 
-State 130
+    $padrão  reduzir usando a regra 70 (fator)
 
-   22 declaracao_funcao: TOKEN_FUNCTION ID parametros_formais_opcional TOKEN_DOISP tipo TOKEN_PONTOVIRG bloco_subrot •
 
-    $default  reduce using rule 22 (declaracao_funcao)
+Estado 133
 
+   43 condicional: TOKEN_IF expressao TOKEN_THEN comando TOKEN_ELSE • comando
 
-State 131
+    TOKEN_BEGIN  deslocar, e ir ao estado 27
+    TOKEN_IF     deslocar, e ir ao estado 40
+    TOKEN_WHILE  deslocar, e ir ao estado 41
+    TOKEN_READ   deslocar, e ir ao estado 42
+    TOKEN_WRITE  deslocar, e ir ao estado 43
+    ID           deslocar, e ir ao estado 44
 
-   69 fator: ID TOKEN_ABREPAR lista_expressoes_opcional TOKEN_FECHAPAR •
+    comando_composto      ir ao estado 45
+    comando               ir ao estado 135
+    atribuicao            ir ao estado 48
+    chamada_procedimento  ir ao estado 49
+    condicional           ir ao estado 50
+    repeticao             ir ao estado 51
+    leitura               ir ao estado 52
+    escrita               ir ao estado 53
 
-    $default  reduce using rule 69 (fator)
 
+Estado 134
 
-State 132
+   48 lista_expressoes: lista_expressoes TOKEN_VIRG expressao •
 
-   42 condicional: TOKEN_IF expressao TOKEN_THEN comando TOKEN_ELSE • comando
+    $padrão  reduzir usando a regra 48 (lista_expressoes)
 
-    TOKEN_BEGIN  shift, and go to state 26
-    TOKEN_IF     shift, and go to state 39
-    TOKEN_WHILE  shift, and go to state 40
-    TOKEN_READ   shift, and go to state 41
-    TOKEN_WRITE  shift, and go to state 42
-    ID           shift, and go to state 43
 
-    comando_composto      go to state 44
-    comando               go to state 134
-    atribuicao            go to state 47
-    chamada_procedimento  go to state 48
-    condicional           go to state 49
-    repeticao             go to state 50
-    leitura               go to state 51
-    escrita               go to state 52
+Estado 135
 
+   43 condicional: TOKEN_IF expressao TOKEN_THEN comando TOKEN_ELSE comando •
 
-State 133
-
-   47 lista_expressoes: lista_expressoes TOKEN_VIRG expressao •
-
-    $default  reduce using rule 47 (lista_expressoes)
-
-
-State 134
-
-   42 condicional: TOKEN_IF expressao TOKEN_THEN comando TOKEN_ELSE comando •
-
-    $default  reduce using rule 42 (condicional)
+    $padrão  reduzir usando a regra 43 (condicional)

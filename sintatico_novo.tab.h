@@ -101,10 +101,10 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 17 "sintatico_novo.y"
+#line 34 "sintatico_novo.y"
 
-        char *sval; 
-        int ival;  
+        char *sval;
+        int ival;
         struct TreeNode *no_ast;
     
 
