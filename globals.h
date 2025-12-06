@@ -23,7 +23,7 @@ typedef struct Simbolo {
 } Simbolo;
 
 Simbolo* buscar_simbolo(char *nome);
-Simbolo* buscar_simbolo_no_escopo_atual(char *nome); // Buscar apenas no escopo atual
+Simbolo* buscar_simbolo_no_escopo_atual(char *nome); // buscar apenas no escopo atual
 void inserir_simbolo(char *nome, char *tipo);
 void inserir_simbolo_com_categoria(char *nome, char *tipo, CategoriaSimbolo categoria);
 void inicializar_tipos_primitivos();
@@ -32,10 +32,10 @@ void fechar_escopo();
 
 //tipos
 typedef enum {
-    EXP_VOID,    /* Para comandos que não retornam valor */
+    EXP_VOID,    /* comandos que não retornam valor */
     EXP_INTEGER,
     EXP_BOOLEAN,
-    EXP_ERRO     /* Para propagar que já houve erro */
+    EXP_ERRO     /* propagar que já houve erro */
 } ExpType;
 
 typedef enum {
@@ -45,7 +45,7 @@ typedef enum {
     TIPO_OPERACAO,
     TIPO_LISTA,
     TIPO_CONDICIONAL,
-    TIPO_PROGRAMA,    /* Nó raiz */
+    TIPO_PROGRAMA,    /* nó raiz */
     TIPO_VAR_DECL,
     TIPO_SUBROTINA,   /* Procedure ou Function */
     TIPO_WHILE,
@@ -93,13 +93,13 @@ extern Simbolo *tabela_de_simbolos;
 extern int yylineno;
 extern char *yytext;
 
-// Estruturas para armazenar erros
+// estruturas para armazenar erros
 typedef struct Erro {
     char *mensagem;
     struct Erro *proximo;
 } Erro;
 
-// Funções para gerenciar erros
+// funções de gerenciamento dos erros
 void adicionar_erro_lexico(const char *mensagem);
 void adicionar_erro_sintatico(const char *mensagem);
 void adicionar_erro_semantico(const char *mensagem);

@@ -4,15 +4,15 @@
     #include <string.h>
     #include "globals.h"
 
-    /* Declaração das funções que o Bison precisará */
-    int yylex(); // A função do analisador léxico (gerada pelo Flex)
-    void yyerror(const char *s); // A função para reportar erros
-    void inicializar_tipos_primitivos(); // Inicializa tipos primitivos na tabela
+    /* declaração das funções do Bison */
+    int yylex(); // função do analisador léxico (gerada pelo Flex)
+    void yyerror(const char *s); // função de report de erros
+    void inicializar_tipos_primitivos(); // inicializar tipos primitivos na tabela
     void inserir_simbolo_com_categoria(char *nome, char *tipo, CategoriaSimbolo categoria);
     void verificar_lista_identificadores_read(TreeNode* lista_ids);
     void verificar_lista_expressoes_write(TreeNode* lista_expr);
-    void abrir_escopo(); // Abre um novo escopo
-    void fechar_escopo(); // Fecha o escopo atual
+    void abrir_escopo(); // abrir um novo escopo
+    void fechar_escopo(); // fechar o escopo atual
     void adicionar_erro_semantico(const char *mensagem);
     void adicionar_erro_sintatico(const char *mensagem);
     void limpar_erros_lexicos();
@@ -58,18 +58,18 @@
     %type <no_ast> secao_declaracao_subrotinas secao_declaracao_subrotinas_opcional
     %type <no_ast> parametros_formais parametros_formais_opcional
     %type <no_ast> declaracao_parametros_lista declaracao_parametros
-    %type <ival> op_aditivo op_multiplicativo relacao /* Retornam o token (int) */
+    %type <ival> op_aditivo op_multiplicativo relacao /* retornam o token (int) */
     %type <no_ast> logico
 
-    /* Precedência de operadores - menos unário precisa ter precedência mais alta que binário */
-    %right TOKEN_NOT  /* Operador unário not */
+    /* precedência de operadores - menos unário precisa ter precedência mais alta que binário */
+    %right TOKEN_NOT  /* operador unário not */
     %left TOKEN_OR
     %left TOKEN_AND
-    %left TOKEN_SOMA TOKEN_SUBT  /* Operadores binários aditivos (subtração binária) */
-    %left TOKEN_MULT TOKEN_DIV   /* Operadores binários multiplicativos */
+    %left TOKEN_SOMA TOKEN_SUBT  
+    %left TOKEN_MULT TOKEN_DIV   
     %nonassoc TOKEN_MENOR TOKEN_MENORIGUAL TOKEN_MAIOR TOKEN_MAIORIGUAL
     %nonassoc TOKEN_IGUAL TOKEN_DIF
-    /* Nota: TOKEN_SUBT unário é tratado na regra fator: TOKEN_SUBT fator e tem precedência implícita mais alta */
+    /* detalhe que o TOKEN_SUBT unário é tratado na regra fator: TOKEN_SUBT fator e tem precedência mais alta */
 
     %debug
 
@@ -99,9 +99,9 @@ bloco_subrot:
     secao_declaracao_variaveis_opcional
     comando_composto
     {
-        /* Junta as variáveis locais ($1) com o corpo ($2) */
+        /* juntar as variáveis locais ($1) com o corpo ($2) */
         $$ = novo_no_lista($1, $2);
-        /* Fechar escopo da subrotina ao finalizar o bloco */
+        /* fechar escopo da subrotina ao finalizar o bloco */
         fechar_escopo();
     }
     ;
@@ -169,12 +169,12 @@ tipo:
 secao_declaracao_subrotinas:
     declaracao_subrotina TOKEN_PONTOVIRG
     {
-        $$ = $1; /* Caso base: uma subrotina */
+        $$ = $1; /* caso base eh de uma subrotina */
 
     }
     | secao_declaracao_subrotinas declaracao_subrotina TOKEN_PONTOVIRG
     {
-        /* Lista de subrotinas */
+        /* lista de subrotinas */
         $$ = novo_no_lista($2, $1);
     }
     ;
@@ -200,10 +200,7 @@ declaracao_procedimento:
         } else {
             inserir_simbolo_com_categoria($2, "procedure", CATEGORIA_PROCEDURE);
         }
-        /* Escopo já foi aberto em parametros_formais_opcional (se houver parâmetros) */
-        /* Se não houver parâmetros, abrir escopo aqui */
-        /* O escopo será fechado ao finalizar bloco_subrot */
-        /* nas procedure não tem tipo de retorno (NULL) e o corpo é $5 */
+        
         $$ = novo_no_subrotina($2, $3, NULL, $5);
     }
     ;
@@ -211,11 +208,7 @@ declaracao_procedimento:
 declaracao_funcao:
     declaracao_funcao_cabecalho parametros_formais_opcional TOKEN_DOISP tipo TOKEN_PONTOVIRG bloco_subrot
     {
-        /* Function já foi inserida na tabela na regra intermediária declaracao_funcao_cabecalho */
-        /* Escopo já foi aberto em parametros_formais_opcional (se houver parâmetros) */
-        /* Se não houver parâmetros, abrir escopo aqui */
-        /* O escopo será fechado ao finalizar bloco_subrot */
-        /* function tem seu tipo ($4) e o corpo é $6 */
+        
         $$ = novo_no_subrotina($1, $2, $4, $6);
         free($1); // Liberar string alocada em declaracao_funcao_cabecalho
     }
@@ -224,8 +217,8 @@ declaracao_funcao:
 declaracao_funcao_cabecalho:
     TOKEN_FUNCTION ID
     {
-        /* Inserir function na tabela IMEDIATAMENTE após ler o nome,
-           antes de processar parâmetros e corpo (parser bottom-up) */
+        /* inserir function na tabela após ler o nome,
+           antes de processar parâmetros e corpo */
         Simbolo* s = buscar_simbolo($2);
         if (s != NULL) {
             if (s->categoria == CATEGORIA_TYPE) {
@@ -240,18 +233,18 @@ declaracao_funcao_cabecalho:
         } else {
             inserir_simbolo_com_categoria($2, "function", CATEGORIA_FUNCTION);
         }
-        $$ = strdup($2); // Retornar nome da function como string
+        $$ = strdup($2); // retornar nome da function como string
     }
     ;
 
 parametros_formais_opcional:
     /* */ {
-        /* Se não há parâmetros, ainda precisamos abrir escopo para variáveis locais */
+        /* se não há parâmetros, ainda abrir escopo para variáveis locais */
         abrir_escopo();
         $$ = NULL;
     }
     | parametros_formais {
-        /* Escopo já foi aberto em parametros_formais quando processamos os parâmetros */
+        /* o escopo já foi aberto em parametros_formais quando houve o processamento dos parâmetros */
         $$ = $1;
     }
     ;
@@ -259,8 +252,7 @@ parametros_formais_opcional:
 parametros_formais:
     TOKEN_ABREPAR declaracao_parametros_lista TOKEN_FECHAPAR
     {
-        /* Abrir escopo quando começamos a processar parâmetros */
-        /* Isso garante que os parâmetros e variáveis locais fiquem no escopo da subrotina */
+        /* abrir escopo quando começar a processar parâmetros */
         abrir_escopo();
         $$ = $2; /* passar a lista que foi criada */
     }
@@ -278,7 +270,7 @@ declaracao_parametros_lista:
 declaracao_parametros:
     lista_identificadores TOKEN_DOISP tipo
     {
-        /* processar parâmetros: permite redeclaração entre diferentes subrotinas */
+        /* processar parâmetros: permitir redeclaração entre diferentes subrotinas */
         processar_declaracao_params($1, $3);
         $$ = $1;
     }
@@ -295,8 +287,8 @@ comando_lista:
     comando { $$ = $1; }
     | comando_lista TOKEN_PONTOVIRG comando
     {
-        /* criar a  lista encadeada de comandos */
-        $$ = novo_no_lista($1, $3); // Atenção: pode precisar ajustar a ordem dependendo da sua função lista
+        /* criação da lista encadeada de comandos */
+        $$ = novo_no_lista($1, $3); 
     }
     ;
 
@@ -317,17 +309,15 @@ atribuicao:
         TreeNode* no_id = novo_no_id($1);
         TreeNode* no_expr = $3;
 
-        // Verificar se é atribuição de retorno de função
-        // Se o símbolo não está na tabela, pode ser porque ainda não foi inserido (parser bottom-up)
-        // Nesse caso, verificamos se é uma function verificando todas as functions declaradas
+        // é preciso verificar se é atribuição de retorno de função
+        // se o símbolo não está na tabela, pode ser porque ainda não foi inserido, 
+        // então verifica-se se é uma function verificando todas as functions declaradas
         int eh_function = 0;
         if (s != NULL && s->categoria == CATEGORIA_FUNCTION) {
             eh_function = 1;
         } else if (s == NULL) {
-            // Pode ser uma function que ainda não foi inserida na tabela
-            // Por enquanto, assumimos que se não está na tabela e não é variável, pode ser function
-            // Isso é uma heurística simples - uma solução completa requeriria gerenciamento de escopos
-            eh_function = 0; // Não podemos assumir sem mais contexto
+            
+            eh_function = 0; 
         }
 
         if (s == NULL && !eh_function) {
@@ -335,15 +325,15 @@ atribuicao:
              snprintf(buffer, sizeof(buffer), "ERRO SEMANTICO (Linha %d): Variavel '%s' nao declarada.\n", yylineno, $1);
              adicionar_erro_semantico(buffer);
         } else if (s != NULL && s->categoria == CATEGORIA_FUNCTION) {
-            // Atribuição de retorno de função: permitir sem erro de "não declarada"
-            // Não fazer nada, apenas permitir
+            // atribuição de retorno de função: permitir sem erro de não declaração
+            // apenas permitir
         } else if (s != NULL && s->categoria != CATEGORIA_VARIABLE) {
             char buffer[512];
             snprintf(buffer, sizeof(buffer), "ERRO SEMANTICO (Linha %d): Tentativa de atribuir valor a '%s' que nao e uma variavel.\n", yylineno, $1);
             adicionar_erro_semantico(buffer);
         }
 
-        // Verificar tipos apenas se não for atribuição de retorno de função
+        // verificar tipos apenas se não for atribuição de retorno de função
         if (s != NULL && s->categoria != CATEGORIA_FUNCTION) {
             if (no_id->tipo_dado != EXP_ERRO && no_expr->tipo_dado != EXP_ERRO) {
                 if (no_id->tipo_dado != no_expr->tipo_dado) {
@@ -435,8 +425,8 @@ lista_expressoes:
     expressao { $$ = $1; }
     | lista_expressoes TOKEN_VIRG expressao
     {
-        /* no caso recursivo, cria a lista encadeada */
-        $$ = novo_no_lista($3, $1); // Ou ($1, $3) dependendo da ordem que preferir
+        /* no caso recursivo, criar a lista encadeada */
+        $$ = novo_no_lista($3, $1); 
     }
     ;
 
@@ -449,7 +439,7 @@ expressao:
     expressao_simples { $$ = $1; }
     | expressao_simples relacao expressao_simples
     {
-        /* relacao retorna o TOKEN (int) usa novo_no_operacao */
+        /* relacao retorna o TOKEN (int) */
         $$ = novo_no_operacao($1, $2, $3);
     }
     ;
@@ -467,12 +457,12 @@ expressao_simples:
     termo { $$ = $1; }
     | expressao_simples op_aditivo termo
     {
-        /* Verificar se $1 é NULL (não deveria acontecer, mas pode ocorrer em casos de erro) */
+        /* verificar se $1 é NULL (não deveria acontecer) */
         if ($1 == NULL) {
             char buffer[512];
             snprintf(buffer, sizeof(buffer), "ERRO SEMANTICO (Linha %d): Operando esquerdo invalido na expressao.\n", yylineno);
             adicionar_erro_semantico(buffer);
-            $$ = $3; /* Retornar apenas o operando direito como fallback */
+            $$ = $3; /* retornar o operando direito como fallback */
         } else {
             $$ = novo_no_operacao($1, $2, $3);
         }
@@ -533,7 +523,7 @@ fator:
 
     | TOKEN_SUBT fator
     {
-        /* menos unário (ex: -5). tratar como operação unária */
+        /* menos unário (ex: -5) -> tratar como operação unária */
         $$ = novo_no_operacao(NULL, TOKEN_SUBT, $2);
     }
     ;
@@ -562,21 +552,21 @@ logico:
             return 1;
         }
 
-        printf("Iniciei a analise lexica\n");
+        printf("Iniciou-se a analise lexica\n");
 
         while (yylex() != 0);
 
         int num_erros_lexicos = contar_erros_lexicos();
-        printf("Obtive %d erros lexicos e foram:\n", num_erros_lexicos);
+        printf("Houveram %d erros lexicos e foram:\n", num_erros_lexicos);
         if (num_erros_lexicos > 0) {
             exibir_erros_lexicos();
         }
-        printf("Finalizei a analise lexica\n");
+        printf("Finalizada a analise lexica\n");
 
         if (num_erros_lexicos > 0) {
             limpar_erros_lexicos();
             fclose(yyin);
-            return 1; /* Termina o programa com erro */
+            return 1; /* terminar o programa com erro */
         }
 
         rewind(yyin);
@@ -585,27 +575,27 @@ logico:
         /* resetar o contador de linhas */
         yylineno = 1;
 
-        printf("Iniciei a analise sintatica\n");
+        printf("Iniciou-se a analise sintatica\n");
         inicializar_tipos_primitivos();
         yydebug = 0;
 
         int num_erros_sintaticos = contar_erros_sintaticos();
-        printf("Obtive %d erros sintaticos e foram:\n", num_erros_sintaticos);
+        printf("Houveram %d erros sintaticos e foram:\n", num_erros_sintaticos);
         if (num_erros_sintaticos > 0) {
             exibir_erros_sintaticos();
         }
-        printf("Finalizei a analise sintatica\n");
+        printf("Finalizada a analise sintatica\n");
 
-        printf("Iniciei a analise semantica\n");
+        printf("Iniciou-se a analise semantica\n");
         int num_erros_semanticos = contar_erros_semanticos();
-        printf("Obtive %d erros semanticos e foram:\n", num_erros_semanticos);
+        printf("Houveram %d erros semanticos e foram:\n", num_erros_semanticos);
         if (num_erros_semanticos > 0) {
             exibir_erros_semanticos();
         }
-        printf("Finalizei a analise semantica\n");
+        printf("Finalizada a analise semantica\n");
 
         if (savedTree != NULL) {
-            printf("\n--- ARVORE SINTATICA ABSTRATA ---\n");
+            printf("\n --- ARVORE SINTATICA ABSTRATA ---\n");
             imprimir_arvore(savedTree, 0);
             printf("---------------------------------\n");
         }

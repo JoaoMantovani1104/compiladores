@@ -3,12 +3,12 @@
 #include <string.h>
 #include "globals.h"
 
-// Listas de erros
+// listas de erros
 static Erro *lista_erros_lexicos = NULL;
 static Erro *lista_erros_sintaticos = NULL;
 static Erro *lista_erros_semanticos = NULL;
 
-// Contadores
+// contadores
 int contador_erros_lexicos = 0;
 static int contador_erros_sintaticos = 0;
 static int contador_erros_semanticos = 0;

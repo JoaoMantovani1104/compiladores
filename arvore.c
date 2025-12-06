@@ -7,7 +7,7 @@
 
 extern int yylineno;
 
-// Função auxiliar para adicionar erros semânticos
+// função auxiliar de adição de erros semânticos
 static void erro_semantico(const char *formato, ...) {
     char buffer[512];
     va_list args;
@@ -27,14 +27,14 @@ TreeNode* novo_no_id(char *nome_id) {
 
     Simbolo* s = buscar_simbolo(nome_id);
     if (s != NULL) {
-        // Verificar se é um tipo primitivo sendo usado como variável
+        // verificar se é um tipo primitivo sendo usado como variável
         if (s->categoria == CATEGORIA_TYPE) {
             erro_semantico("ERRO SEMANTICO (Linha %d): O identificador '%s' eh um tipo primitivo e nao pode ser usado como variavel.\n", yylineno, nome_id);
             no->tipo_dado = EXP_ERRO;
         } else if (s->categoria == CATEGORIA_VARIABLE) {
             no->tipo_dado = string_para_tipo(s->tipo);
         } else if (s->categoria == CATEGORIA_FUNCTION) {
-            // Function: tipo de retorno é integer ou boolean (assumimos integer por padrão)
+            // function: tipo de retorno é integer ou boolean (assumime-se integer por padrão)
             no->tipo_dado = EXP_INTEGER;
         } else if (s->categoria == CATEGORIA_PROCEDURE) {
             no->tipo_dado = EXP_VOID;
@@ -44,7 +44,6 @@ TreeNode* novo_no_id(char *nome_id) {
     } else {
         no->tipo_dado = EXP_ERRO;
     }
-
 
     for (int i = 0; i < MAXCHILDREN; i++) {
         no->filho[i] = NULL;
@@ -102,7 +101,7 @@ TreeNode* novo_no_operacao(TreeNode* esq, int op, TreeNode* dir) {
         no->filho[i] = NULL;
     }
 
-    // Verificar se algum operando é VOID (procedure sem retorno)
+    // verificar se algum operando é Void (procedure -> sem retorno)
     if (esq != NULL && esq->tipo_dado == EXP_VOID) {
         erro_semantico("ERRO SEMANTICO (Linha %d): Tentativa de usar uma PROCEDURE (sem retorno) em uma expressao.\n", yylineno);
         no->tipo_dado = EXP_ERRO;
@@ -115,17 +114,17 @@ TreeNode* novo_no_operacao(TreeNode* esq, int op, TreeNode* dir) {
         return no;
     }
 
-    // Verificar se algum operando tem erro
+    // verificar se algum operando tem erro
     if ((esq != NULL && esq->tipo_dado == EXP_ERRO) || (dir != NULL && dir->tipo_dado == EXP_ERRO)) {
         no->tipo_dado = EXP_ERRO;
         return no;
     }
 
-    // Operações aritméticas: +, -, *, div
+    // operações aritméticas: +, -, *, div
     if (op == TOKEN_SOMA || op == TOKEN_SUBT || op == TOKEN_MULT || op == TOKEN_DIV) {
-        // Verificar se é operador unário: menos unário (-) tem esq=NULL, dir!=NULL
+        // verificar se é um operador unário: menos unário (-) tem esq=NULL, dir!=NULL
         if (esq == NULL && dir != NULL) {
-            // Operador unário: menos unário (-)
+            // operador unário: menos unário (-)
             if (dir->tipo_dado != EXP_INTEGER) {
                 erro_semantico("ERRO SEMANTICO (Linha %d): Operador '-' unario requer operando do tipo INTEGER.\n", yylineno);
                 no->tipo_dado = EXP_ERRO;
@@ -133,7 +132,7 @@ TreeNode* novo_no_operacao(TreeNode* esq, int op, TreeNode* dir) {
             }
             no->tipo_dado = EXP_INTEGER;
         } else if (esq != NULL && dir != NULL) {
-            // Operador binário: ambos operandos devem existir
+            // operador binário: ambos operandos devem existir
             if (esq->tipo_dado != EXP_INTEGER || dir->tipo_dado != EXP_INTEGER) {
                 erro_semantico("ERRO SEMANTICO (Linha %d): Operacoes aritmeticas requerem operandos do tipo INTEGER.\n", yylineno);
                 no->tipo_dado = EXP_ERRO;
@@ -141,7 +140,7 @@ TreeNode* novo_no_operacao(TreeNode* esq, int op, TreeNode* dir) {
             }
             no->tipo_dado = EXP_INTEGER;
         } else {
-            // Caso inválido: falta algum operando
+            // caso inválido: falta algum operando
             if (esq == NULL && dir == NULL) {
                 erro_semantico("ERRO SEMANTICO (Linha %d): Operacao requer pelo menos um operando.\n", yylineno);
             } else if (esq != NULL && dir == NULL) {
@@ -151,9 +150,9 @@ TreeNode* novo_no_operacao(TreeNode* esq, int op, TreeNode* dir) {
             return no;
         }
     }
-    // Operações relacionais: <, <=, >, >=
+    // operações relacionais: <, <=, >, >=
     else if (op == TOKEN_MENOR || op == TOKEN_MENORIGUAL || op == TOKEN_MAIOR || op == TOKEN_MAIORIGUAL) {
-        // Operandos devem ser integer
+        // operandos devem ser integer
         if (esq == NULL || dir == NULL) {
             erro_semantico("ERRO SEMANTICO (Linha %d): Operacao relacional requer dois operandos.\n", yylineno);
             no->tipo_dado = EXP_ERRO;
@@ -166,9 +165,9 @@ TreeNode* novo_no_operacao(TreeNode* esq, int op, TreeNode* dir) {
         }
         no->tipo_dado = EXP_BOOLEAN;
     }
-    // Operações de igualdade/diferença: =, <>
+    // operações de igualdade/diferença: =, <>
     else if (op == TOKEN_IGUAL || op == TOKEN_DIF) {
-        // Operandos devem ser do mesmo tipo primitivo (integer ou boolean)
+        // operandos devem ser do mesmo tipo primitivo (integer ou boolean)
         if (esq == NULL || dir == NULL) {
             erro_semantico("ERRO SEMANTICO (Linha %d): Operacao de igualdade/diferenca requer dois operandos.\n", yylineno);
             no->tipo_dado = EXP_ERRO;
@@ -181,9 +180,9 @@ TreeNode* novo_no_operacao(TreeNode* esq, int op, TreeNode* dir) {
         }
         no->tipo_dado = EXP_BOOLEAN;
     }
-    // Operações lógicas: and, or
+    // operações lógicas: and, or
     else if (op == TOKEN_AND || op == TOKEN_OR) {
-        // Operandos devem ser boolean
+        // operandos devem ser boolean
         if (esq == NULL || dir == NULL) {
             erro_semantico("ERRO SEMANTICO (Linha %d): Operacao logica (and, or) requer dois operandos.\n", yylineno);
             no->tipo_dado = EXP_ERRO;
@@ -196,11 +195,11 @@ TreeNode* novo_no_operacao(TreeNode* esq, int op, TreeNode* dir) {
         }
         no->tipo_dado = EXP_BOOLEAN;
     }
-    // Operador lógico unário: not
+    // operador lógico unário: not
     else if (op == TOKEN_NOT) {
-        // Operando deve ser boolean
+        // operando deve ser boolean
         if (dir == NULL && esq != NULL) {
-            // not como operador unário à esquerda (se implementado assim)
+            // not como operador unário à esquerda
             if (esq->tipo_dado != EXP_BOOLEAN) {
                 erro_semantico("ERRO SEMANTICO (Linha %d): Operador 'not' requer operando do tipo BOOLEAN.\n", yylineno);
                 no->tipo_dado = EXP_ERRO;
@@ -220,7 +219,7 @@ TreeNode* novo_no_operacao(TreeNode* esq, int op, TreeNode* dir) {
         }
     }
     else {
-        // Operador desconhecido
+        // operador desconhecido
         erro_semantico("ERRO SEMANTICO (Linha %d): Operador desconhecido.\n", yylineno);
         no->tipo_dado = EXP_ERRO;
     }
@@ -304,11 +303,11 @@ TreeNode* novo_no_chamada(TreeNode* id, TreeNode* args) {
     Simbolo* s = buscar_simbolo(id->valor_s);
     if (s != NULL) {
         if (s->categoria == CATEGORIA_PROCEDURE) {
-            no->tipo_dado = EXP_VOID; /* Procedures não retornam valor */
+            no->tipo_dado = EXP_VOID; /* procedures não retornam valor */
         }
         else if (s->categoria == CATEGORIA_FUNCTION) {
-            // Functions retornam integer ou boolean conforme declarado
-            // Por enquanto, assumimos integer (pode ser melhorado se necessário)
+            // functions retornam integer ou boolean conforme declarado
+            // por enquanto, assume-se integer 
             no->tipo_dado = EXP_INTEGER;
         }
         else if (s->categoria == CATEGORIA_VARIABLE) {
@@ -383,22 +382,22 @@ void processar_declaracao_vars(TreeNode* lista_ids, char* tipo) {
 
     if (lista_ids->tipo == TIPO_ID) {
         // caso base: um ID sozinho
-        // Verificar redeclaração apenas no escopo atual (não nos escopos externos)
+        // verificar redeclaração apenas no escopo atual (não nos escopos externos!!)
         Simbolo* s = buscar_simbolo(lista_ids->valor_s);
         if (s != NULL) {
-            // Verificar se está tentando redeclarar um tipo primitivo
+            // verificar se está tentando redeclarar um tipo primitivo
             if (s->categoria == CATEGORIA_TYPE) {
                 erro_semantico("ERRO SEMANTICO (Linha %d): Nao e possivel redeclarar o tipo primitivo '%s' como variavel.\n", yylineno, lista_ids->valor_s);
             } else {
-                // Verificar se é redeclaração no mesmo escopo
-                // Se o símbolo encontrado está no escopo atual, é erro
-                // Se está em escopo externo, é shadowing (permitido)
+                // verificar se é redeclaração no mesmo escopo
+                // se o símbolo encontrado está no escopo atual, é erro
+                // se está em escopo externo, é shadowing (permitido)
                 Simbolo* s_atual = buscar_simbolo_no_escopo_atual(lista_ids->valor_s);
                 if (s_atual != NULL) {
-                    // Redeclaração no mesmo escopo - erro
+                    // redeclaração no mesmo escopo - erro
                     erro_semantico("ERRO SEMANTICO (Linha %d): Redeclaracao da variavel '%s'. Ela ja foi declarada anteriormente.\n", yylineno, lista_ids->valor_s);
                 } else {
-                    // Shadowing - permitido, inserir no escopo atual
+                    // shadowing - permitido
                     inserir_simbolo(lista_ids->valor_s, tipo);
                 }
             }
@@ -420,11 +419,11 @@ void processar_declaracao_params(TreeNode* lista_ids, char* tipo) {
         // caso base: um ID sozinho
         Simbolo* s = buscar_simbolo(lista_ids->valor_s);
         if (s != NULL) {
-            // Verificar se está tentando redeclarar um tipo primitivo
+            // verificar se está tentando redeclarar um tipo primitivo
             if (s->categoria == CATEGORIA_TYPE) {
                 erro_semantico("ERRO SEMANTICO (Linha %d): Nao e possivel redeclarar o tipo primitivo '%s' como parametro.\n", yylineno, lista_ids->valor_s);
             } else {
-                // Permitir redeclaração de parâmetros entre diferentes subrotinas
+                // permitir redeclaração de parâmetros entre diferentes subrotinas
                 // (não reportar erro, apenas inserir)
                 inserir_simbolo(lista_ids->valor_s, tipo);
             }
@@ -484,14 +483,14 @@ void verificar_lista_expressoes_write(TreeNode* lista_expr) {
     }
 }
 
-/* Função auxiliar para imprimir espaços de indentação */
+/* função auxiliar para imprimir espaços de indentação */
 static void indentar(int nivel) {
     for (int i = 0; i < nivel; i++) {
         printf("  "); // 2 espaços por nível
     }
 }
 
-/* Função auxiliar para converter o código do token em string */
+/* função auxiliar para converter o código do token em string */
 static char* get_op_str(int op) {
     switch(op) {
         case TOKEN_SOMA: return "+";
@@ -528,7 +527,8 @@ void imprimir_arvore(TreeNode *tree, int nivel) {
             break;
         case TIPO_LISTA:
             printf("[LISTA]\n"); 
-            /* Dica: Lista às vezes polui a árvore, mas é bom para ver a estrutura real */
+            /* lista polui um pouco a árvore, mas é bom para ver a estrutura implementada */
+            /* é possível tirar para melhorar visualização*/
             break;
         case TIPO_CONDICIONAL:
             printf("[IF/ELSE]\n");
@@ -547,7 +547,6 @@ void imprimir_arvore(TreeNode *tree, int nivel) {
             break;
         case TIPO_ID:
             printf("[ID] %s", tree->valor_s);
-            /* Opcional: mostrar o tipo se já foi inferido */
             if (tree->tipo_dado == EXP_INTEGER) printf(" (int)");
             else if (tree->tipo_dado == EXP_BOOLEAN) printf(" (bool)");
             printf("\n");
@@ -569,7 +568,7 @@ void imprimir_arvore(TreeNode *tree, int nivel) {
             break;
     }
 
-    /* Chamada recursiva para os filhos */
+    /* chamada recursiva aos filhos */
     for (int i = 0; i < MAXCHILDREN; i++) {
         imprimir_arvore(tree->filho[i], nivel + 1);
     }
