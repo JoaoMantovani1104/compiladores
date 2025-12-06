@@ -521,7 +521,7 @@ char *yytext;
 #line 2 "lexico.l"
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h> 
+#include <string.h>
 #include "sintatico_novo.tab.h"
 #include "globals.h"
 extern YYSTYPE yylval;
@@ -932,7 +932,7 @@ YY_RULE_SETUP
 case 26:
 YY_RULE_SETUP
 #line 43 "lexico.l"
-{ return TOKEN_FECHAPAR; } 
+{ return TOKEN_FECHAPAR; }
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
@@ -1010,17 +1010,17 @@ YY_RULE_SETUP
 case 40:
 YY_RULE_SETUP
 #line 68 "lexico.l"
-{ 
-    yylval.sval = strdup(yytext); 
-    return ID; 
+{
+    yylval.sval = strdup(yytext);
+    return ID;
 }
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
 #line 73 "lexico.l"
-{ 
-    yylval.sval = strdup(yytext); 
-    return NUMERO; 
+{
+    yylval.sval = strdup(yytext);
+    return NUMERO;
 }
 	YY_BREAK
 case 42:

@@ -2180,8 +2180,6 @@ yyreturnlab:
         inicializar_tipos_primitivos();
         yydebug = 0;
 
-        int resultado_parse = yyparse();
-
         int num_erros_sintaticos = contar_erros_sintaticos();
         printf("Obtive %d erros sintaticos e foram:\n", num_erros_sintaticos);
         if (num_erros_sintaticos > 0) {
@@ -2197,6 +2195,11 @@ yyreturnlab:
         }
         printf("Finalizei a analise semantica\n");
 
+        if (savedTree != NULL) {
+            printf("\n--- ARVORE SINTATICA ABSTRATA ---\n");
+            imprimir_arvore(savedTree, 0);
+            printf("---------------------------------\n");
+        }
 
         // yyparse();
 

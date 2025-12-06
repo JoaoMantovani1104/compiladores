@@ -483,3 +483,94 @@ void verificar_lista_expressoes_write(TreeNode* lista_expr) {
         verificar_lista_expressoes_write(lista_expr->filho[1]);
     }
 }
+
+/* Função auxiliar para imprimir espaços de indentação */
+static void indentar(int nivel) {
+    for (int i = 0; i < nivel; i++) {
+        printf("  "); // 2 espaços por nível
+    }
+}
+
+/* Função auxiliar para converter o código do token em string */
+static char* get_op_str(int op) {
+    switch(op) {
+        case TOKEN_SOMA: return "+";
+        case TOKEN_SUBT: return "-";
+        case TOKEN_MULT: return "*";
+        case TOKEN_DIV:  return "/";
+        case TOKEN_AND:  return "AND";
+        case TOKEN_OR:   return "OR";
+        case TOKEN_NOT:  return "NOT";
+        case TOKEN_IGUAL: return "=";
+        case TOKEN_DIF:   return "<>";
+        case TOKEN_MENOR: return "<";
+        case TOKEN_MAIOR: return ">";
+        case TOKEN_MAIORIGUAL: return ">=";
+        case TOKEN_MENORIGUAL: return "<=";
+        default: return "?";
+    }
+}
+
+void imprimir_arvore(TreeNode *tree, int nivel) {
+    if (tree == NULL) return;
+
+    indentar(nivel);
+
+    switch (tree->tipo) {
+        case TIPO_PROGRAMA:
+            printf("[PROGRAMA] %s\n", tree->valor_s ? tree->valor_s : "");
+            break;
+        case TIPO_VAR_DECL:
+            printf("[DECL VAR]\n");
+            break;
+        case TIPO_SUBROTINA:
+            printf("[SUBROTINA] %s\n", tree->valor_s ? tree->valor_s : "anonima");
+            break;
+        case TIPO_LISTA:
+            printf("[LISTA]\n"); 
+            /* Dica: Lista às vezes polui a árvore, mas é bom para ver a estrutura real */
+            break;
+        case TIPO_CONDICIONAL:
+            printf("[IF/ELSE]\n");
+            break;
+        case TIPO_WHILE:
+            printf("[WHILE]\n");
+            break;
+        case TIPO_ATRIBUICAO:
+            printf("[ATRIBUICAO :=]\n");
+            break;
+        case TIPO_OPERACAO:
+            printf("[OPERACAO] %s\n", get_op_str(tree->operacao));
+            break;
+        case TIPO_NUMERO:
+            printf("[NUM] %s\n", tree->valor_s);
+            break;
+        case TIPO_ID:
+            printf("[ID] %s", tree->valor_s);
+            /* Opcional: mostrar o tipo se já foi inferido */
+            if (tree->tipo_dado == EXP_INTEGER) printf(" (int)");
+            else if (tree->tipo_dado == EXP_BOOLEAN) printf(" (bool)");
+            printf("\n");
+            break;
+        case TIPO_CHAMADA:
+            printf("[CHAMADA] Func/Proc\n");
+            break;
+        case TIPO_LEITURA:
+            printf("[READ]\n");
+            break;
+        case TIPO_ESCRITA:
+            printf("[WRITE]\n");
+            break;
+        case TIPO_BOOL_LITERAL:
+            printf("[BOOL] %s\n", tree->valor_s);
+            break;
+        default:
+            printf("[NO DESCONHECIDO %d]\n", tree->tipo);
+            break;
+    }
+
+    /* Chamada recursiva para os filhos */
+    for (int i = 0; i < MAXCHILDREN; i++) {
+        imprimir_arvore(tree->filho[i], nivel + 1);
+    }
+}

@@ -86,6 +86,7 @@ ExpType string_para_tipo(char* tipo_str);
 void verificar_lista_identificadores_read(TreeNode* lista_ids);
 void verificar_lista_expressoes_write(TreeNode* lista_expr);
 void yyerror(const char *s);
+void imprimir_arvore(TreeNode *tree, int nivel);
 
 extern TreeNode *savedTree;
 extern Simbolo *tabela_de_simbolos;
