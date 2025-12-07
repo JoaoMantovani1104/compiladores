@@ -1,4 +1,4 @@
-BISON_FILE = sintatico_novo.y
+BISON_FILE = sintatico.y
 
 LEX_FILE = lexico.l
 
